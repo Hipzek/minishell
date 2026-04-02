@@ -45,7 +45,7 @@ int		ft_find_token_end(char *raw, int start)
 	t_char_type		type;
 	int				i;
 
-	ft_fill_matrix(&matrix);
+	ft_fill_matrix(matrix);
 	state = STATE_NORMAL;
 	i = start;
 	while (raw[i])
@@ -58,8 +58,42 @@ int		ft_find_token_end(char *raw, int start)
 	}
 	if (raw[i] == '\0' && state == STATE_IN_QUOTE)
 		return (-1);
-	return(1);
+	return(i);
 }
+int		ft_count_token(char *raw)
+{
+	t_state			matrix[2][3];
+	t_state			state;
+	t_char_type		type;
+	int				i;
+	int				count;
+
+	ft_fill_matrix(matrix);
+	i = 0;
+	count = 0
+	if (!raw || !raw[i])
+		return(-1);
+	while (raw[i])
+	{
+		ft_skip_separators(raw, &i);
+		if (!raw[i])
+			break;
+		count++;
+		state = STATE_NORMAL;
+		while(raw[i])
+		{
+			type = ft_get_char_type(raw[i])
+			if (type == CHAR_SEP && state == STATE_NORMAL)
+				count++;
+			state = matrix[state][type];
+			i++;
+		}
+	if (raw[i] == '\0' && state == STATE_IN_QUOTE)
+		return (-1);
+	}
+	return(count);
+}
+
 
 char	*ft_extract_token(char *raw, int *i)
 {
@@ -72,7 +106,7 @@ char	*ft_extract_token(char *raw, int *i)
 	if (!raw[*i])
 		return(NULL);
 	start = *i;
-	end = ft_find_token_end;
+	end = ft_find_token_end(raw, start);
 	if (end == -1)
 		return(NULL);
 	token = ft_substr(raw, start, end - start);
@@ -82,4 +116,13 @@ char	*ft_extract_token(char *raw, int *i)
 	return(token);
 }
 
-	
+char	**ft_split_almost_like_shell(char *raw)
+{
+	char	**tab;
+	char	*token;
+	int		i;
+	int		j;
+	int		count;
+
+	count = ft_count_
+}
