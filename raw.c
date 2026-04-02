@@ -2,61 +2,84 @@
 
 int	main(int argc, char **argv)
 {
-	char	*raw;
-	int		i;
-	char	in_quote;
+	char			*raw;
+	int				i;
+	t_state			matrix[2][3];
+	t_state			state;
+	int				start;
+	int				end;
+	t_char_type		type;
+	
 
+	ft_fill_matrix(&matrix[0]);
 	if (argc < 2)
-		return(ft_putstr("nb de parametre insufisant"), 0);
+	return(ft_putstr("nb de parametre insufisant"), 0);
 	raw = argv[1];
 	i = 0;
-	in_quote = 0;
+	if (!ft_skip_separators(raw, &i))
+		return(ft_putstr("erreur avec raw[i] et rendu  visible avec ft_skip_separator"), 0);
+	if (!raw[i])
+		return(ft_putstr("que des espaces"), 0);
+	start = i;
+	state = STATE_NORMAL;
+
 	while (raw[i])
 	{
-		if (ft_is_quote(raw[i]))
-		{
-			if (in_quote == 0)
-				in_quote = raw[i];
-			else if (raw[i] == in_quote)
-				in_quote = 0;
-			ft_putchar('&');
-		}
-		else if (ft_is_sep(raw[i]) && in_quote == 0)
-			ft_putchar('*');
-		else
-			ft_putchar(raw[i]);
+		type = ft_get_char_type(raw[i]);
+		if (state == STATE_NORMAL && type == CHAR_SEP)
+			break;
+		state = matrix[state][type];
 		i++;
 	}
+	if (raw[i] == '\0' && state == STATE_IN_QUOTE)
+		return(ft_putstr("fin de la string detecte alors que la state_machine est toujours engage avec une quote non ferme"), 0);
+	end = i;
+	write(1, raw + start, (end - start));
 	return(0);
 }
 
-int		ft_get_char_type(char c)
+int		ft_find_token_end(char *raw, int start)
 {
-	if (c == ' ' || c == '\t')
-		return (1);
-	if (c == '\'')
-		return (2);
-	else 
-		return(3);
-}
+	t_state			matrix[2][3];
+	t_state			state;
+	t_char_type		type;
+	int				i;
 
-
-
-/*
-
-		if (raw[i] == '\'' || raw[i] == )
-		if (ft_is_sep(raw[i]) == 1)
-		{
-			ft_putchar('*');
-		}
-		else if (ft_is_quote(raw[i]) == 1)
-		{
-			ft_putchar('&');
-		}
-		else 
-			ft_putchar(raw[i]);
+	ft_fill_matrix(&matrix);
+	state = STATE_NORMAL;
+	i = start;
+	while (raw[i])
+	{
+		type = ft_get_char_type(raw[i]);
+		if (type == CHAR_SEP && state == STATE_NORMAL)
+			break;
+		state = matrix[state][type];
 		i++;
 	}
-	return(0);
+	if (raw[i] == '\0' && state == STATE_IN_QUOTE)
+		return (-1);
+	return(1);
 }
-*/
+
+char	*ft_extract_token(char *raw, int *i)
+{
+	int		start;
+	int		end;
+	char	*token;
+
+	if (!raw || !raw[*i] || !ft_skip_separators(raw, &i))
+		return(NULL);
+	if (!raw[*i])
+		return(NULL);
+	start = *i;
+	end = ft_find_token_end;
+	if (end == -1)
+		return(NULL);
+	token = ft_substr(raw, start, end - start);
+	if (!token)
+		return(NULL);
+	*i = end;
+	return(token);
+}
+
+	
