@@ -90,8 +90,41 @@ Tant qu'on est pas arrive au dernier ou que path est toujours null, on continuer
 Quand LE NOMBRE DE chemin est atteint et que path est toujours nul de la streuture 
 on peut arreter car une fonction ne fonctionne pas sinon on passe a la commande sujivamte dispo dans la premiere chaine de commande.ready execve
 
- je pars de envp, cours sur ca please, je trouve path, je cree une variable qui va recevoir path car le path de la structure n'est rempl que si on touve sinon il; reste a 0, je le met dans *path, ce *path j'en fais avec split **paths. nouvelle boucle, tant que path[j] et que cmds.path == NULL, on continu, si fin de path et toujours null, ca veut dire aucun chemin pour l'executio, dans la boucle on a fait acces question sur la double condition avec || dans access ou pas, puis meme chose et a chaque fin de travail dans le boucle imbirque du while ou free bien sur ce dernier, on ne l'utilise que ici bien sur voir, fais deux fonctions pour deiux mission mission de test et mission de preparation de chaque commande au test
+ je pars de envp, cours sur ca please, je trouve path, je cree une variable qui va recevoir path car le path de la structure
+  n'est rempl que si on touve sinon il; reste a 0, je le met dans *path, ce *path j'en fais avec split **paths. nouvelle boucle, tant que path[j] et que cmds.path == NULL,
+ on continu, si fin de path et toujours null, ca veut dire aucun chemin pour l'executio, dans la boucle on a fait acces question sur la double condition avec ||
+  dans access ou pas, puis meme chose et a chaque fin de travail dans le boucle imbirque du while ou free bien sur ce dernier, on ne l'utilise que ici bien sur voir, 
+  fais deux fonctions pour deiux mission mission de test et mission de preparation de chaque commande au test
 
+
+    Il faut verifier que les 5 premieres lettres
+    es
+
+    char**envp
+
+    char    *path_value;
+    char    **paths;
+    char    *candidate;
+    char    *found;
+
+    if (strchr(cmds[].ready_execve[0]),'/')
+    {
+
+    }
+  while (envp[i])
+  {
+    if (ft_strncmp("envp[i]", "PATH=", 5) == 0)
+    {
+        path = strdup[envp[i + 5]];
+        break;
+    }
+    i++;
+    if (!path_value)
+        return(NULL);
+
+  }
+
+{)
 
 
 /*
