@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 13:25:58 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/04/10 15:29:18 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/04/10 15:48:35 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ int	main(int argc, char **argv)
 	*/
 
 	if (fork() == 0)
-		execve("/bin/ls", &argv[1], argv + 1);
+		execvp(argv[1], argv + 1);
 
 	wait(&status);
 	
