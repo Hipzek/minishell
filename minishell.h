@@ -6,7 +6,7 @@
 /*   By: hbelleuv <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 18:27:45 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/04/10 14:54:10 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/04/10 15:19:03 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,5 +16,7 @@
 # include <stdio.h>
 # include <readline/readline.h>
 # include <readline/history.h>
+# include <stdlib.h>
+# include <unistd.h>
 
 #endif
