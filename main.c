@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 13:25:58 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/04/10 18:35:52 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/04/10 18:38:46 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,8 +80,8 @@ int	main(void)
             pid_t pid = fork(); // création du processus enfant
             if (pid == 0)
             {
-                // ===== PROCESSUS ENFANT =====
-                // remplace le programme courant par la commande demandée
+                // PROCESSUS ENFANT
+		// remplace le programme courant par la commande demandée
                 execvp(args[0], args);
                 // si execvp échoue, on arrive ici
                 perror("execvp"); // affiche l'erreur système
@@ -89,16 +89,16 @@ int	main(void)
             }
             else if (pid > 0)
             {
-                // ===== PROCESSUS PARENT =====
+                // PROCESSUS PARENT
                 // attend que l'enfant se termine
                 waitpid(pid, &status, 0);
             }
             else
             {
-                // ===== ERREUR FORK =====
-                perror("fork"); // fork a échoué
+                // ERREUR FORK
+		perror("fork"); // fork a échoué
             }
-        }
+	}
         // libération de la mémoire allouée par readline
         free(line);
     }
