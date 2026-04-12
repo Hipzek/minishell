@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 13:25:58 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/04/10 18:38:46 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/04/12 22:45:48 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ int	main(void)
     while (1)
     {
         // affiche le prompt et attend une entrée utilisateur
-        line = readline("minishell > ");
+        line = readline("minishell> ");
         // si readline retourne NULL (Ctrl+D), on quitte le shell
         if (!line)
             break;
