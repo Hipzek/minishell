@@ -29,6 +29,35 @@ size_t	ft_strlen(const char *s)
 	return (i);
 }
 
+char	*ft_strchr(const char *s, int c)
+{
+	if (!s)
+		return (NULL);
+	while (*s)
+	{
+		if (*s == (char)c)
+			return ((char *)s);
+		s++;
+	}
+	if (c == '\0')
+		return ((char *)s);
+	return (NULL);
+}
+
+int	ft_strncmp(const char *s1, const char *s2, size_t n)
+{
+	size_t i;
+
+	if (n == 0)
+		return (0);
+	i = 0;
+	while (i < n && s1[i] && s2[i] && s1[i] == s2[i])
+		i++;
+	if (i == n)
+		return (0);
+	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
+}
+
 char	*ft_strdup(const char *s)
 {
 	char	*p;
@@ -205,5 +234,27 @@ char	**ft_split(char const *s, char c)
 	if (filled < 0)
 		return (NULL);
 	p[filled] = NULL;
+	return (p);
+}
+
+char    *ft_strjoin_with_slash(char const *s1, char const *s2)
+{
+	char    *p;
+	size_t  len_s1;
+	size_t  len_s2;
+	size_t  len_total;
+
+	if (s1 == NULL || s2 == NULL)
+		return (NULL);
+	len_s1 = ft_strlen(s1);
+	len_s2 = ft_strlen(s2);
+	len_total = len_s1 + len_s2;
+	p = ft_calloc(len_total + 2, sizeof * p);
+	if (p == NULL)
+		return (NULL);
+	ft_memcpy(p, s1, len_s1);
+	ft_memcpy(p + len_s1, "/", 1);
+	ft_memcpy(p + len_s1 + 1, s2, len_s2);
+	p[len_total + 1] = '\0';
 	return (p);
 }

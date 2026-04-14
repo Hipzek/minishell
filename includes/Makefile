@@ -54,5 +54,11 @@ info:
 	@echo "OBJS=$(OBJS)"
 	@echo "TARGET=$(TARGET)"
 
+# Target pour tests unitaires de lexing (ne compile pas raw.c)
+test:
+	@echo "Compiling lexing tests..."
+	$(CC) $(CFLAGS) -I . ../tests/lex_test.c ../lexing_parsing.c/first.c ../lexing_parsing.c/eyes_utils.c ../utils/utils.c -o ../lex_test
+	@echo "✓ Test binary: ../lex_test"
+
 # Declare phony targets (cibles qui ne sont pas des fichiers réels)
 .PHONY: all clean fclean re info

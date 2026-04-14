@@ -19,3 +19,6 @@ teste chaque chemin avec access(..., X_OK)
 renvoie le bon chemin pour execvei
 
 
+Ajoute une fonction (par ex. dans exec.c) :
+Prototype : int ft_exec_pipeline(t_cmd *cmds, int nb_cmds, char **envp, char *infile, char *outfile);
+Elle fera l’ouverture in_fd/out_fd, construira pipes, forkera, executera, attendra enfants et retournera code final.
