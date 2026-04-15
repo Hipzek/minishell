@@ -13,11 +13,8 @@ int	main(int argc, char **argv, char **envp)
 		return (ft_putstr("BUG AU MALLOC de CMDS\n"), 1);
 	ft_init_cmds(cmds, nb_cmds);
 	if (ft_populate_and_norm(cmds, argv, envp, nb_cmds) < 0)
-		return (ft_free_cmds(cmds, nb_cmds), free(cmds), \
+		return (ft_free_cmds(cmds, nb_cmds), free(cmds), 
 				ft_putstr("BUG AVEC POPULATE\n"), 1);
-	
-	/* TODO: Implement ft_exec_pipeline and file I/O */
-	
 	ft_free_cmds(cmds, nb_cmds);
 	free(cmds);
 	return (0);
@@ -50,3 +47,63 @@ int	ft_populate_and_norm(t_cmd *cmds, char **argv, char **envp, int nb_cmds)
 	}
 	return (0);
 }
+
+int	ft_exec_pipeline(t_cmd *cmds, int nb_cmds, char *infile, char *outfile)
+{
+    int infile_fd;
+    int outfile_fd;
+    int tab[2];
+    int fd_relai_source_dentree;
+
+    infile_fd = open (infile, O_RDONLY);
+    if (infile_fd < 0)
+        return;
+    
+    outfile_fd = open(outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    if (outfile_fd < 0)
+        return ;
+    pipe(tab);
+    fd_relai_source_dentree = infile_fd;
+    fork
+    if (pid == 0)
+        appel fonction peemiere commande(cmds,relai, pipe1);
+    if (pid > 0)
+    on cl;ose les fd imiutiles
+    on close le relai.
+
+    i = 0;
+    while (i < nb de commande)
+    {
+        pipe (tab);
+        fd_relai_source_dentree = pipe[0];
+        if (pid == 0)
+            appel fonction deuxieme commande(cmds,relai, pipe1);
+        if (pid > 0) 
+            on close les fd
+            on ferme le relai;
+    }
+    dernier forK
+    la fonction 3
+
+    waitpidd
+
+    }
+    }
+
+    
+    
+        //fonction 1 pour premiere commande
+        //fonction 2 pour les n commandes avant la derniere
+        // fonction 3 pour la derniere
+
+    
+    fork
+
+	return (0);
+}
+
+int first_cmd(t_cmd *cmds, int nb_cmds, int infile_fd, int fd_relai_source_dentree)
+{
+
+}
+
