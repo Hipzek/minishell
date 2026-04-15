@@ -80,6 +80,5 @@ void	ft_free_cmds(t_cmd *cmds, int nb_cmds);
 char	*ft_remove_quote(char *token);
 t_cmd_status	ft_get_cmd_status(t_cmd *cmds);
 char	*ft_extract_path(char *cmds_from_ready_execve, char **paths);
-int		ft_exec_pipeline(t_cmd *cmds, int count, char *infile, char *outfile);
 
 #endif
