@@ -32,6 +32,26 @@ typedef enum    e_resolv_path
     RESOLV_NONE
 }   t_resolv_path;
 
+typedef struct s_file
+{
+    char    *infile;
+    char    *outfile;
+    int     infile_fd;
+    int     outfile_fd;
+} t_file;
+
+
+typedef struct  s_px {
+    t_cmd   *cmds;
+    t_file  *file;
+    int     is_here_doc;
+    int     fd_relai;
+    int     nb_cmds;
+    char    **envp;
+    int     pipefd[2];
+} t_px;
+
+
 typedef enum    e_state
 {
     STATE_NORMAL,
@@ -42,6 +62,7 @@ typedef struct s_cmd {
     char            *raw;           // Ex: "ls -l "
     char            **ready_execve; // Ex: ["ls", "-l", NULL] (sans les quotes !)
     char            *path;
+    char            *name;
     t_cmd_status    status;
     int             exit_code;
     t_resolv_path   resolv_mode;
@@ -79,6 +100,6 @@ char	*ft_strjoin_with_slash(char const *s1, char const *s2);
 void	ft_free_cmds(t_cmd *cmds, int nb_cmds);
 char	*ft_remove_quote(char *token);
 t_cmd_status	ft_get_cmd_status(t_cmd *cmds);
-char	*ft_extract_path(char *cmds_from_ready_execve, char **paths);
+char	*ft_extract_path(char *cmds_from_ready_execve, char **envp);
 
 #endif

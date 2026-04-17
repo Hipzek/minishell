@@ -13,7 +13,8 @@ void	ft_init_cmds(t_cmd *cmds, int nb_cmds)
 		cmds[i].status = CMD_INIT;
 		cmds[i].exit_code = 0;
 		cmds[i].resolv_mode = RESOLV_INIT;
-		i++;
+		cmds[i].name = NULL;
+        i++;
 	}
 }
 
@@ -29,7 +30,7 @@ t_cmd	*ft_malloc_cmds(int nb_cmds)
 	return (cmds);
 }
 
-void	ft_free_cmds(t_cmd *cmds, int nb_cmds)
+void	ft_free_cmds(t_cmd *cmds)
 {
 	int	i;
 	int	j;
@@ -53,4 +54,5 @@ void	ft_free_cmds(t_cmd *cmds, int nb_cmds)
 			free(cmds[i].path);
 		i++;
 	}
+    free(px
 }

@@ -22,3 +22,7 @@ renvoie le bon chemin pour execvei
 Ajoute une fonction (par ex. dans exec.c) :
 Prototype : int ft_exec_pipeline(t_cmd *cmds, int nb_cmds, char **envp, char *infile, char *outfile);
 Elle fera l’ouverture in_fd/out_fd, construira pipes, forkera, executera, attendra enfants et retournera code final.
+
+
+
+Je vais reprendre mon code pour etre sur de ne pas etre stupide et pour se faire j'ai besoin de l'ouvrir a plusieurs endroits
