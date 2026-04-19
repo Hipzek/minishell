@@ -43,12 +43,15 @@ typedef struct s_file
 
 typedef struct  s_px {
     t_cmd   *cmds;
-    t_file  *file;
+    t_file  file;
     int     is_here_doc;
     int     fd_relai;
     int     nb_cmds;
     char    **envp;
+    char    **argv;
     int     pipefd[2];
+    int     exit_code;
+    int     argc;
 } t_px;
 
 
@@ -97,7 +100,7 @@ char	**ft_split(char const *s, char c);
 char	*ft_strchr(const char *s, int c);
 int	 ft_strncmp(const char *s1, const char *s2, size_t n);
 char	*ft_strjoin_with_slash(char const *s1, char const *s2);
-void	ft_free_cmds(t_cmd *cmds, int nb_cmds);
+void	ft_free_cmds(t_cmd *px);
 char	*ft_remove_quote(char *token);
 t_cmd_status	ft_get_cmd_status(t_cmd *cmds);
 char	*ft_extract_path(char *cmds_from_ready_execve, char **envp);

@@ -1,18 +1,21 @@
 #include "pipex.h"
 
-int	ft_populate_and_norm(t_cmd **cmds, char **argv, char **envp, int nb_cmds)
+int	ft_populate_and_norm(t_px *px)
 {
 	int	i;
 
-	if (!cmds || !argv || nb_cmds < 2)
-		return (-1);
+	if (!px || !px->cmds)
+		return (1);
     // SI ON EST EN MODE HERE_DOC alors on commence le parsing a partir de i = 1 
     // HORS BONUS, argv[0] == "pipex", argv[1] == "file1", argv[2] == "cmd1" 
     // et argv[argc - 2] == "cmd finale" : argv[argc - 1] == "file2"
     // POUR LE PRECISER : argv[argc] == segfault car on commence a compter a partir de 0
     // DANS LE CAS DU BONUS : " pipex(0) here_doc(1) limiter(2) CMD1(3)..." 
-	i = 0;
-	while (i < nb_cmds)
+    if (px->is_here_doc == 1)
+        i = 1;
+    else
+        i = 0
+	while (i < px->nb_cmds nb)
 	{
 		(*cmds)[i].raw = argv[i + 2];
         (*cmds)[i].ready_execve = ft_split_almost_like_shell((*cmds)[i].raw);
@@ -35,25 +38,29 @@ int	ft_populate_and_norm(t_cmd **cmds, char **argv, char **envp, int nb_cmds)
 int	main(int argc, char **argv, char **envp)
 {
 	int		nb_cmds;
-    t_px    *px;
-    
+    t_px    px;
+    //encapsuler meme le test de base, faire juste init.px si 1, erreur et le return de la faction appelante 
+    //ecriy sur .erreuu dans la struct ou putsr-fd ou perrot....
+    ///ici il faut faire une operation pour retirer les test d'entre et avoir un main avec juste des appels de fonction un truc net 
+    // px est ma variable de contexte 
+    //
     if (argc < 5)
-		return (ft_putstr("nb de parametre insufisant\n"), 1);
-    if (ft_is_here_doc(argv) == 1) 
-	    nb_cmds = argc - 4;
+		return (ft_putstr_fd("nombres de parametre insufisant\n", 2), 1);
+    px.is_here_doc = ft_is_here_doc(argv);
+    if (px.is_here_doc == 1)
+	    px.nb_cmds = argc - 4;
     else
-        nb_cmds = argc - 3;
-    px = ft_fill_px(argv, envp, nb_cmds);
-    if (!px) 
+        px.nb_cmds = argc - 3;
+    px.argc = argc;
+    px.envp = envp;
+    px.argv = argv;
+    if (px.is_here_doc == 1 && argc < 6)
+        return (ft_putstr_fd("Erreur : arguments insuffisants\n", 2), 1);
+    if (ft_fill_px(&px, argv, envp, nb_cmds) < 1)
         return(1);
-	if (!(px->cmds = ft_malloc_cmds(nb_cmds)))
-		return (ft_putstr("BUG AU MALLOC de CMDS\n"), 1);
-	ft_init_cmds(px);
-	if (ft_populate_and_norm(&(px->cmds), argv, envp, nb_cmds) < 0)
-		return (ft_free_cmds(px->cmds, nb_cmds), free(px->cmds), ft_putstr("BUG AVEC POPULATE\n"), 1);
-    ft_exec_pipeline(px);
-    ft_free_cmds(px);
-    ft_free_px(px);
+    if (ft_exec_pipeline(&px) < 0)
+        return(ft_free_cmds(&px), 1);
+    ft_free_cmds(&px);
 	return (0);
 }
 int     ft_is_here_doc(char **argv)
@@ -64,158 +71,3 @@ int     ft_is_here_doc(char **argv)
         return (1);
     return(0);
 }
-
-int     ft_exec_pipeline(t_px *px)
-{
-    int     i;
-
-    if (!px)
-        return(-1);
-    px->fd_relai = ft_first_cmds(&px, 0);
-    i = 1;
-    while (i < (px->nb_cmds - 1))
-    {
-        px->fd_relai = ft_middle_cmd(&px, i);
-        i++;
-    }
-    px->fd_relai = ft_last_cmd(&px, i);
-    return (1);
-}
-
-int    ft_first_cmds(t_px **px, int i)
-{
-    pid_t   pid;
-
-    if (!px)
-        return (-1);
-    pipe((*px)->pipefd);
-    pid = fork();
-    if (pid < 0)
-        return;
-    if (pid == 0)
-    {
-        dup2((*px)->fd_relai, 0);
-        dup2((*px)->pipefd[1], 1);
-        close((*px)->fd_relai);
-        close((*px)->pipefd[1]);
-        close((*px)->pipefd[0]);
-        close((*px)->outfile_fd);
-        execve((*px)->cmds[i].path, (*px)->cmds[i].ready_execve, (*px)->envp);
-        perror((*px)->cmds[i].ready_execve[0]);
-        _exit(127); 
-    }
-    close((*px)->fd_relai);
-    close((*px)->pipefd[1]);
-    return((*px)->pipefd[0]);
-}
-
-int    ft_middle_cmd(t_px **px, int i)
-{
-    pid_t   pid;
-
-    if (!px)
-        return (-1);
-    pipe((*px)->pipefd);
-    pid = fork();
-    if (pid < 0)
-        return;
-    if (pid == 0)
-    {
-        dup2((*px)->fd_relai, 0);
-        dup2((*px)->pipefd[1],1);
-        close((*px)->fd_relai);
-        close((*px)->pipefd[1]);
-        close((*px)->pipefd[0]);
-        close((*px)->outfile_fd);
-        execve((*px)->cmds[i].path, (*px)->cmds[i].ready_execve, (*px)->envp);
-        perror((*px)->cmds[i].ready_execve[0]);
-        _exit(127);
-    }
-    close((*px)->fd_relai);
-    close((*px)->pipefd[1]);
-    return ((*px)->pipefd[0]); 
-}
-int    ft_last_cmd(t_px **px, int i)
-{
-    pid_t   pid;
-
-    if (!px)
-        return (-1);
-    pid = fork();
-    if (pid == 0)
-    {
-        dup2((*px)->fd_relai, 0);
-        dup2((*px)->outfile_fd, 1);
-        close((*px)->fd_relai);
-        close((*px)->outfile_fd);
-        execve((*px)->cmds[i].path, (*px)->cmds[i].ready_execve, (*px)->envp);
-        perror((*px)->cmds[i].ready_execve[0]);
-        _exit(127);
-    }
-    close((*px)->fd_relai);
-    close((*px)->outfile_fd);
-}
-
-
-
-/*
-    pipe(pipefd);
-    pid = fork();
-    if (pid < 0)
-        return;
-    if (pid == 0)
-    {
-        dup2(fd_relai, 0);
-        dup2(pipefd[1], 1);
-        close(fd_relai);
-        close(pipefd[1]);
-        close(pipefd[0]);
-        close(outfile_fd);
-        execve(cmds[i].path, cmds[i].ready_execve[0], NULL);
-        perror(cmds[i].ready_execve[0]);
-        exit(127);
-    }
-    ≈
-    close(pipefd[1]);
-    fd_relai = pipefd[0];
-    i++;
-    while (i < nb_cmds - 1)
-    {
-        pipe(pipefd);
-        pid = fork();
-        if (pid < 0)
-            return;
-        if (pid == 0)
-        {
-            dup2(fd_relai, 0);
-            dup2(pipefd[1],1);
-            close(fd_relai);
-            close(pipefd[1]);
-            close(pipefd[0]);
-            close(outfile_fd);
-            execve(cmds[i].path, cmds[i].ready_execve[0], NULL);
-            perror(cmds[i].ready_execve[0]);
-            exit(127);
-        }
-        close(fd_relai);
-        close(pipefd[1]);
-        fd_relai = pipefd[0];
-        i++;
-    }
-    pid = fork();
-    if (pid == 0)
-    {
-        dup2(fd_relai, 0);
-        dup2(outfile_fd, 1);
-        close(fd_relai);
-        close(outfile_fd);
-        execve(cmds[i].path, cmds[i].ready_execve[0], NULL);
-        perror(cmds[i].ready_execve[0]);
-    }
-    close(fd_relai);
-    close(outfile_fd);
-
-}
-```
-
-
