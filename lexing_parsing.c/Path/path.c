@@ -41,30 +41,30 @@ void	ft_free_paths(char **paths)
 	free(paths);
 }
 
-char	*ft_extract_path(char *cmd, char **envp)
+char	*ft_extract_path(char *cmds_from_ready_execve, t_px *px)
 {
 	char	**paths;
 	char	*candidate;
 	int		i;
 
-	if (!cmd || !envp)
+	if (!cmds_from_ready_execve || !px || !px->envp)
 		return (NULL);
 	/* Check if command already contains a slash (direct path) */
-	if (ft_strchr(cmd, '/'))
+	if (ft_strchr(cmds_from_ready_execve, '/'))
 	{
-		if (access(cmd, X_OK) == 0)
-			return (ft_strdup(cmd));
+		if (access(cmds_from_ready_execve, X_OK) == 0)
+			return (ft_strdup(cmds_from_ready_execve));
 		return (NULL);
 	}
 	/* Get all paths from PATH environment variable */
-	paths = ft_really_fill_paths(envp);
+	paths = ft_really_fill_paths(px->envp);
 	if (!paths)
 		return (NULL);
 	/* Search command in each path directory */
 	i = 0;
 	while (paths[i])
 	{
-		candidate = ft_strjoin_with_slash(paths[i], cmd);
+		candidate = ft_strjoin_with_slash(paths[i], cmds_from_ready_execve);
 		if (!candidate)
 		{
 			ft_free_paths(paths);

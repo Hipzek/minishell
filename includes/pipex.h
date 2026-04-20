@@ -6,6 +6,7 @@
 # include <errno.h>
 # include <fcntl.h>
 # include <sys/wait.h>
+# include <stdio.h>
 
 typedef enum    e_char_type
 {
@@ -40,6 +41,15 @@ typedef struct s_file
     int     outfile_fd;
 } t_file;
 
+typedef struct s_cmd {
+    char            *raw;
+    char            **ready_execve;
+    char            *path;
+    char            *name;
+    t_cmd_status    status;
+    int             exit_code;
+    t_resolv_path   resolv_mode;
+} t_cmd;
 
 typedef struct  s_px {
     t_cmd   *cmds;
@@ -54,32 +64,27 @@ typedef struct  s_px {
     int     argc;
 } t_px;
 
-
 typedef enum    e_state
 {
     STATE_NORMAL,
     STATE_IN_QUOTE
 }   t_state;
- 
-typedef struct s_cmd {
-    char            *raw;           // Ex: "ls -l "
-    char            **ready_execve; // Ex: ["ls", "-l", NULL] (sans les quotes !)
-    char            *path;
-    char            *name;
-    t_cmd_status    status;
-    int             exit_code;
-    t_resolv_path   resolv_mode;
-} t_cmd;
 
+/* ===== UTILS ===== */
 int		ft_putchar(char c);
 int		ft_putstr(char *str);
+int		ft_putstr_fd(char *str, int fd);
 size_t	ft_strlen(const char *s);
 char	*ft_strdup(const char *s);
 char	*ft_substr(char const *s, unsigned int start, size_t len);
 void	*ft_calloc(size_t count, size_t size);
 void	*ft_memcpy(void *dst, const void *src, size_t n);
+char	*ft_strchr(const char *s, int c);
+int		ft_strncmp(const char *s1, const char *s2, size_t n);
+char	*ft_strjoin_with_slash(char const *s1, char const *s2);
+char	**ft_split(char const *s, char c);
 
-
+/* ===== TOKENIZATION (LEXING) ===== */
 int		ft_is_sep(char c);
 int	    ft_is_quote(char c);
 t_char_type	ft_get_char_type(char c);
@@ -88,21 +93,38 @@ int		ft_skip_separators(char *raw, int *i);
 int		ft_find_token_end(char *raw, int start);
 int		ft_count_token(char *raw);
 char	*ft_extract_token(char *raw, int *i);
-void     ft_init_cmds(t_cmd *cmds, int nb_cmds);
 char	**ft_split_almost_like_shell(char *raw);
-t_cmd   *ft_malloc_cmds(int nb_cmds);
-int     ft_populate_and_norm(t_cmd *cmds, char **argv, char **envp, int nb_cmds);
+char	*ft_remove_quote(char *token);
+
+/* ===== COMMANDS (PARSING) ===== */
+int     ft_malloc_cmds(t_px *px);
+void    ft_init_cmds(t_px *px);
+void	ft_free_cmds(t_px *px);
+int     ft_fill_and_intialise_struct_cmds_in_heap(t_px *px);
+int	ft_populate_and_norm(t_px *px);
+t_cmd_status	ft_get_cmd_status(t_cmd *cmds);
+
+/* ===== PATH RESOLUTION ===== */
 void        ft_free_paths(char **paths);
 char	**ft_really_fill_paths(char **envp);
 char	*ft_fill_path(char **envp);
 char	**ft_fill_paths(char *path);
-char	**ft_split(char const *s, char c);
-char	*ft_strchr(const char *s, int c);
-int	 ft_strncmp(const char *s1, const char *s2, size_t n);
-char	*ft_strjoin_with_slash(char const *s1, char const *s2);
-void	ft_free_cmds(t_cmd *px);
-char	*ft_remove_quote(char *token);
-t_cmd_status	ft_get_cmd_status(t_cmd *cmds);
-char	*ft_extract_path(char *cmds_from_ready_execve, char **envp);
+char	*ft_extract_path(char *cmds_from_ready_execve, t_px *px);
+
+/* ===== MAIN STRUCTURE (CONSTRUCTOR) ===== */
+void    ft_init_struct_px_in_stack(t_px *px);
+void    ft_init_struct_file_in_stack(t_px *px);
+int     ft_open_fill(t_px *px);
+int     ft_fill_and_intialise_struct_px(t_px *px, int argc, char **argv,
+            char **envp);
+void    ft_cleanup_px(t_px *px);
+/* ===== EXECUTION PIPELINE ===== */
+int     ft_exec_pipeline(t_px *px);
+int     ft_first_cmds(t_px *px, int i);
+int     ft_middle_cmd(t_px *px, int i);
+int     ft_last_cmd(t_px *px, int i);
+
+/* ===== HERE_DOC ===== */
+int     ft_is_here_doc(char **argv);
 
 #endif
