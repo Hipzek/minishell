@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/04 21:18:46 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/05/04 22:06:08 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/05/05 13:06:41 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,21 @@ int	update_env(t_shell *shell, char *name, char *value)
 	new_env = malloc(sizeof(char *) * (i + 1) + 1);
 	if (!new_env)
 	{
-		free;
+		free(new_str);
+		return (1);
 	}
-
+	// Copie des ptr existants
+	i = 0;
+	while (shell->env[i] != NULL)
+	{
+		new_env[i] = shell->env[i];
+		i++;
+	}
+	// ajoue du nouveau + NULL
+	new_env[i] = new_str;
+	new_env[i + 1] = NULL;
+	// libere l'ancien double tab et remplace par le nouveau
+	free(shell->env);
+	shell->env = new_env;
+	return (0);
 }
