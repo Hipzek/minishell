@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 18:27:45 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/04/27 14:01:30 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/05/05 15:10:09 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,5 +81,8 @@ void	apply_redir(t_cmd *cmd);
 char	*path(char *cmd, char **envp);
 int		is_builtin(t_cmd *cmd);
 int		exec_builtin(t_cmd *cmd, char **envp);
+
+// BUILTIN
+int	update_env(t_shell *shell, char *name, char *value);
 
 #endif

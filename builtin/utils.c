@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/04 21:18:46 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/05/05 13:06:41 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/05/05 15:08:22 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,39 +53,39 @@ static char	*create_env(char *name, char *value)
 }
 
 /*
-Met à jour une variable existante ou la crée si elle n'existe pas
-Renvoie 0 en cas de succès 1 en cas d'erreur de malloc
+- cas 1 : la variable existe donc on la remplace
 */
 
-int	update_env(t_shell *shell, char *name, char *value)
+static int	replace_env(t_shell *shell, char *name, char *new_str)
 {
-	int		i;
-	int		len;
-	char	*new_str;
-	char	**new_env;
+	int	i;
+	int	len;
 
-	if (!shell || !shell->env || !name || !value)
-		return (1);
-	new_str = creat_env(name, value);
-	if (!new_str)
-		return (1);
 	len = ft_strlen(name);
 	i = 0;
-	// cas 1 : la variable existe donc on la remplace
 	while (shell->env[i] != NULL)
 	{
 		if (ft_strncmp(shell->env[i], name, len) == 0
-				&& shell->env[i][len] == '=')
+			&& shell->env[i][len] == '=')
 		{
 			free(shell->env[i]); // libere NOM=ANCIEN
 			shell->env[i] = new_str; // met le NOM=NOUVEAU
-			return (0);
+			return (1);
 		}
 		i++;
 	}
-	// Cas 2 : la variable existe pas -> il faut agrandir l'env
-	// i contient le nb d'elements existants
-	// on alloue : i elements + 1 pour le nouveau + 1 pour NULL
+	return (0);
+}
+
+// Cas 2 : la variable existe pas -> il faut agrandir l'env
+// i contient le nb d'elements existants
+// on alloue : i elements + 1 pour le nouveau + 1 pour NULL
+
+static int	add_env(t_shell *shell, char *new_str)
+{
+	int		i;
+	char	**new_str;
+
 	new_env = malloc(sizeof(char *) * (i + 1) + 1);
 	if (!new_env)
 	{
@@ -106,4 +106,23 @@ int	update_env(t_shell *shell, char *name, char *value)
 	free(shell->env);
 	shell->env = new_env;
 	return (0);
+}
+
+/*
+Met à jour une variable existante ou la crée si elle n'existe pas
+Renvoie 0 en cas de succès 1 en cas d'erreur de malloc
+*/
+
+int	update_env(t_shell *shell, char *name, char *value)
+{
+	char	*new_str;
+
+	if (!shell || !shell->env || !name || !value)
+		return (1);
+	new_str = creat_env(name, value);
+	if (!new_str)
+		return (1);
+	if (replace_env(shell, name, new_str) == 0)
+		return (0);
+	return (add_env(shell, new_str));
 }
