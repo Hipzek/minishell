@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/21 16:20:37 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/05/15 19:59:02 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/05/15 20:06:19 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,9 +113,12 @@ int	main(int argc, char **argv, char **env)
 			free_token_lst(shell.token);
 			shell.token = NULL;
 		}
+		if (shell.cmd)
+		{
+			free_cmd_lst(shell.cmd);
+			shell.cmd = NULL;
+		}
 		free(line);
 	}
-	free_cmd_lst(shell.cmd);
-	clear_history();
 	return (0);
 }
