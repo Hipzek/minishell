@@ -5,6 +5,7 @@ CC = cc
 SRCS = main.c \
        lexer/do_lex_utils.c lexer/lex_utils.c lexer/t_list_utils.c \
        parsing/valid_syntax.c \
+       expand/expand.c \
        cmd/cmd_table.c \
        signals/signals.c \
        exec/exec_pipeline.c exec/path.c exec/utils.c \

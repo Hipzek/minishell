@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@learner.42.tech>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/15 21:55:49 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/05/15 22:09:45 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/05/15 22:55:33 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,82 @@ mais la chaîne vide "" doit être conservée comme un token valide.
 - Le signe dollar isolé : Un $ suivi d'un espace ou d'une fin de chaîne (\0) reste un caractère $ littéral.
 */
 
+#include "../includes/minishell.h"
+
+static char	*append_var_value(t_shell *shell, char *res, char *str, int *i)
+{
+	char	*var_name;
+	char	*var_value;
+	int		start;
+	char	*tmp;
+
+	tmp = res;
+	(*i)++; // saute le $
+	// cas 1 : $?
+	if (str[*i] == '?')
+	{
+		var_value = ft_itoa(shell->exit_code);
+		res = ft_strjoin(tmp, var_value);
+		free(var_value);
+		free(tmp);
+		(*i)++;
+		return (res);
+	}
+	return (res);
+	// TODO
+}
+
+static char	*process_expand(t_shell *shell, char *str)
+{
+	char	*res;
+	t_state	state;
+	int		i;
+
+	res = ft_strdup("");
+	state = NORMAL;
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] == '\'' && state == NORMAL)
+			state = IN_SQUOTE;
+		else if (str[i] == '\'' && state == IN_SQUOTE)
+			state = NORMAL;
+		else if (str[i] == '"' && state == NORMAL)
+			state = IN_DQUOTE;
+		else if (str[i] == '"' && state == IN_DQUOTE)
+			state = NORMAL;
+		if (str[i] == '$' && state != IN_SQUOTE) // && is_valid_dollar(str[i + 1])) //TODO
+		{
+			res = append_var_value(shell, res, str, &i);
+		}
+		else
+		{
+			res = ft_strjoin(res, str);
+			i++;
+		}
+	}
+	return (res);
+}
+
 void	expand_tokens(t_shell *shell)
 {
-	...;
+	t_token	*current;
+	t_token	*prev;
+	char	*new_val;
+
+	current = shell->token;
+	prev = NULL;
+	while (current != NULL)
+	{
+		if (current->token_type == WORD)
+		{
+			// nouvelle chaine
+			new_val = process_expand(shell, current->value);
+			// expand vide TODO
+			free(current->value);
+			current->value = new_val;
+		}
+		prev = current;
+		current = current->next;
+	}
 }
