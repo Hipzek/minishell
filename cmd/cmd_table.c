@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/22 13:59:43 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/05/13 18:55:50 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/05/15 19:24:23 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,13 +106,11 @@ static t_cmd	*parse_cmd(t_token **token)
 	t_cmd	*cmd;
 	int		argc;
 
-	cmd = malloc(sizeof(t_cmd));
+	cmd = ft_calloc(1, sizeof(t_cmd));
 	if (!cmd)
 		return (NULL);
-	cmd->redir = NULL;
-	cmd->next = NULL;
 	argc = count_args(*token);
-	cmd->args = malloc(sizeof(char *) * (argc + 1));
+	cmd->args = ft_calloc(argc + 1, sizeof(char *));
 	if (!cmd->args)
 	{
 		free(cmd);

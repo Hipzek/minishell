@@ -6,7 +6,7 @@
 /*   By: hbelleuv <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/07 15:22:16 by hbelleuv          #+#    #+#             */
-/*   Updated: 2025/11/14 15:14:18 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/05/15 19:35:46 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,14 +33,14 @@ char	*ft_strdup(const char *src)
 
 	dest = NULL;
 	len = ft_strlen(src);
-	dest = malloc(sizeof(char) * len + 1);
+	dest = ft_calloc(len + 1, sizeof(char));
 	if (!dest)
 		return (NULL);
 	ft_strcpy(src, dest);
 	return (dest);
 }
 /*
-38 #include <stdio.h>
+#include <stdio.h>
 int     main(void)
 {
 	char *src = "Helfeefefeflo iWoefwfewfewfefwrld";

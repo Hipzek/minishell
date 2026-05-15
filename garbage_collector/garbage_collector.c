@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 21:58:05 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/05/14 17:10:14 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/05/15 19:50:50 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,8 @@ void	free_token_lst(t_token *token)
 	while (token)
 	{
 		tmp = token->next;
-		free(token->value);
+		if (token->value)
+			free(token->value);
 		free(token);
 		token = tmp;
 	}
@@ -81,10 +82,25 @@ void	free_shell(t_shell *shell)
 		free_double_tab(shell->env);
 		shell->env = NULL;
 	}
+	if (shell->token != NULL)
+	{
+		free_token_lst(shell->token);
+		shell->token = NULL;
+	}
 	if (shell->cmd != NULL)
 	{
 		free_cmd_lst(shell->cmd);
 		shell->cmd = NULL;
+	}
+	if (shell->saved_stdin != -1)
+	{
+		close(shell->saved_stdin);
+		shell->saved_stdin = -1;
+	}
+	if (shell->saved_stdout != -1)
+	{
+		close(shell->saved_stdout);
+		shell->saved_stdout = -1;
 	}
 }
 
