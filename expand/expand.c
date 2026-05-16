@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@learner.42.tech>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/15 21:55:49 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/05/16 12:51:12 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/05/16 13:34:22 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ static char	*append_var_value(t_shell *shell, char *res, char *str, int *i)
 	}
 	// cas 2 : variable env classique
 	start = *i;
-	while (str[*i] && (ft_isalnum(str[*i] || str[*i] == '_')))
+	while (str[*i] && (ft_isalnum(str[*i]) || str[*i] == '_'))
 		(*i)++;
 	var_name = ft_substr(str, start, *i - start);
 	var_value = get_env(shell, var_name);
@@ -79,7 +79,7 @@ int	is_valid_dollar(char c)
 	// si le char est squote ou dquote
 	if (c == '"' || c == '\'')
 		return (0);
-	retunr (1);
+	return (1);
 }
 
 static char	*process_expand(t_shell *shell, char *str)
@@ -107,7 +107,7 @@ static char	*process_expand(t_shell *shell, char *str)
 		}
 		else
 		{
-			res = ft_strjoin(res, str);
+			res = ft_strjoin_char(res, str[i]);
 			i++;
 		}
 	}
@@ -129,8 +129,6 @@ t_token	*del_token_node(t_token **head, t_token *prev, t_token *to_del)
 	return (next_node);
 }
 
-int	has_
-
 void	expand_tokens(t_shell *shell)
 {
 	t_token	*current;
@@ -146,11 +144,11 @@ void	expand_tokens(t_shell *shell)
 			// 1 creation nouvelle chaine
 			new_val = process_expand(shell, current->value);
 			// 2 si expand vide
-			if (new_val == '\0' && !ft_strchr(current->value, '\'')
+			if (new_val && *new_val == '\0' && !ft_strchr(current->value, '\'')
 				&& !ft_strchr(current->value, '"'))
 			{
 				free(new_val);
-				current = del_token_node(shell->token, prev, current);
+				current = del_token_node(&shell->token, prev, current);
 				continue ;
 			}
 			free(current->value);

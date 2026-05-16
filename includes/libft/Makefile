@@ -40,6 +40,7 @@ SRCS_LIBFT = \
 	libft/ft_strdup.c \
 	libft/ft_striteri.c \
 	libft/ft_strjoin.c \
+	libft/ft_strjoin_char.c \
 	libft/ft_strlcat.c \
 	libft/ft_strlcpy.c \
 	libft/ft_strlen.c \
