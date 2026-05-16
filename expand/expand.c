@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@learner.42.tech>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/15 21:55:49 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/05/15 22:55:33 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/05/16 12:51:12 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,30 @@ static char	*append_var_value(t_shell *shell, char *res, char *str, int *i)
 		(*i)++;
 		return (res);
 	}
+	// cas 2 : variable env classique
+	start = *i;
+	while (str[*i] && (ft_isalnum(str[*i] || str[*i] == '_')))
+		(*i)++;
+	var_name = ft_substr(str, start, *i - start);
+	var_value = get_env(shell, var_name);
+	free(var_name);
+	if (var_value != NULL)
+	{
+		res = ft_strjoin(tmp, var_value);
+		free(tmp);
+	}
 	return (res);
-	// TODO
+}
+
+int	is_valid_dollar(char c)
+{
+	// si fin de chaine, espace ou tabulation
+	if (c == '\0' || c == ' ' || c == '\t')
+		return (0);
+	// si le char est squote ou dquote
+	if (c == '"' || c == '\'')
+		return (0);
+	retunr (1);
 }
 
 static char	*process_expand(t_shell *shell, char *str)
@@ -79,7 +101,7 @@ static char	*process_expand(t_shell *shell, char *str)
 			state = IN_DQUOTE;
 		else if (str[i] == '"' && state == IN_DQUOTE)
 			state = NORMAL;
-		if (str[i] == '$' && state != IN_SQUOTE) // && is_valid_dollar(str[i + 1])) //TODO
+		if (str[i] == '$' && state != IN_SQUOTE && is_valid_dollar(str[i + 1]))
 		{
 			res = append_var_value(shell, res, str, &i);
 		}
@@ -91,6 +113,23 @@ static char	*process_expand(t_shell *shell, char *str)
 	}
 	return (res);
 }
+
+t_token	*del_token_node(t_token **head, t_token *prev, t_token *to_del)
+{
+	t_token	*next_node;
+
+	next_node = to_del->next;
+	if (prev == NULL)
+		*head = next_node;
+	else
+		prev->next = next_node;
+	if (to_del->value)
+		free(to_del->value);
+	free(to_del);
+	return (next_node);
+}
+
+int	has_
 
 void	expand_tokens(t_shell *shell)
 {
@@ -104,9 +143,16 @@ void	expand_tokens(t_shell *shell)
 	{
 		if (current->token_type == WORD)
 		{
-			// nouvelle chaine
+			// 1 creation nouvelle chaine
 			new_val = process_expand(shell, current->value);
-			// expand vide TODO
+			// 2 si expand vide
+			if (new_val == '\0' && !ft_strchr(current->value, '\'')
+				&& !ft_strchr(current->value, '"'))
+			{
+				free(new_val);
+				current = del_token_node(shell->token, prev, current);
+				continue ;
+			}
 			free(current->value);
 			current->value = new_val;
 		}
