@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/21 16:20:37 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/05/16 13:10:08 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/05/16 17:38:55 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,7 @@ int	main(int argc, char **argv, char **env)
 			if (shell.token && valid_syntax(shell.token) == 0)
 			{
 				expand_tokens(&shell);
-				// rm quotes : remove_quotes(&shell);
+				remove_quotes(&shell);
 				shell.cmd = cmd_table(shell.token);
 				if (shell.cmd)
 				{

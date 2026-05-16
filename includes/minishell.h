@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 18:27:45 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/05/15 22:48:41 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/05/16 17:36:39 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,6 +128,9 @@ void	ft_putstr_fd(char *s, int fd);
 
 // EXPAND
 void	expand_tokens(t_shell *shell);
+
+// REMOVE QUOTES
+void	remove_quotes(t_shell *shell);
 
 // TABLE CMD
 t_cmd	*cmd_table(t_token *tokens);
