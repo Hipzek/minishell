@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/18 18:47:10 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/05/26 16:59:40 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/05/26 17:11:53 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,17 +76,18 @@ static char	*expand_heredoc_line(t_shell *shell, char *str)
 			res = append_var_value(shell, res, str, &i);
 		else
 		{
-			res = ft_strjoin(res, &str[i]);
+			res = ft_strjoin_char(res, str[i]);
 			i++;
 		}
 	}
-	return (str);
+	free(str);
+	return (res);
 }
 
 // Lit l'entree utilisateur jusqu'au EOF et renvoie le fd de lecture (fd)
 int	read_heredoc(t_shell *shell, char *delim_token)
 {
-	int		fd;
+	int		fd[2];
 	int		expand_flag;
 	char	*line;
 	char	*real_delim;
@@ -110,10 +111,10 @@ int	read_heredoc(t_shell *shell, char *delim_token)
 		}
 		if (expand_flag)
 			line = expand_heredoc_line(shell, line); // TODO
-		ft_putendl_fd(line, fd);
+		ft_putendl_fd(line, fd[1]);
 		free(line);
 	}
 	free(real_delim);
-	close(fd);
-	return (fd);
+	close(fd[1]);
+	return (fd[0]);
 }

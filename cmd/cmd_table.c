@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/22 13:59:43 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/05/26 15:45:29 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/05/26 17:12:25 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,7 +136,7 @@ t_cmd	*cmd_table(t_shell *shell)
 	head = NULL;
 	tail = NULL;
 	tok = shell->token;
-	while (shell->token != NULL)
+	while (tok != NULL)
 	{
 		new_cmd = parse_cmd(shell, &tok);
 		if (new_cmd == NULL)
