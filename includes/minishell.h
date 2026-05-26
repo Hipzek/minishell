@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 18:27:45 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/05/16 17:36:39 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/05/26 15:42:06 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,7 @@ typedef struct s_redir
 {
 	t_token_type	type;
 	char			*file;
+	int				heredoc_fd;
 	struct s_redir	*next;
 }	t_redir;
 
@@ -128,12 +129,19 @@ void	ft_putstr_fd(char *s, int fd);
 
 // EXPAND
 void	expand_tokens(t_shell *shell);
+int		is_valid_dollar(char c);
+char	*append_var_value(t_shell *shell, char *res, char *str, int *i);
 
 // REMOVE QUOTES
+char	*clean_token_value(char *str);
 void	remove_quotes(t_shell *shell);
 
+// HEREDOC
+int		has_quotes(char *str);
+int		read_heredoc(t_shell *shell, char *delim_token);
+
 // TABLE CMD
-t_cmd	*cmd_table(t_token *tokens);
+t_cmd	*cmd_table(t_shell *shell);
 
 // EXEC
 int		exec_pipeline(t_shell *shell);

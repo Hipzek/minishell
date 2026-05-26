@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   remove_quotes.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/16 15:43:24 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/05/16 17:35:56 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/05/18 19:07:02 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-static char	*clean_token_value(char *str)
+char	*clean_token_value(char *str)
 {
 	char	*res;
 	t_state	state;
@@ -33,7 +33,7 @@ static char	*clean_token_value(char *str)
 			state = NORMAL;
 		else
 			res = ft_strjoin_char(res, str[i]);
-		i++;	
+		i++;
 	}
 	return (res);
 }

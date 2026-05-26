@@ -8,6 +8,7 @@ SRCS = main.c \
        expand/expand.c \
        expand/remove_quotes.c \
        cmd/cmd_table.c \
+       heredoc/heredoc.c \
        signals/signals.c \
        exec/exec_pipeline.c exec/path.c exec/utils.c \
        builtin/ft_cd.c builtin/ft_echo.c builtin/ft_env.c \

@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/22 13:59:43 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/05/15 19:24:23 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/05/26 15:45:29 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,17 +57,17 @@ static int	count_args(t_token *token)
 	return (count);
 }
 
-static void	add_redir(t_redir **redir, t_token_type type, char *file)
+static void	add_redir(t_redir **redir, t_token_type type, char *file, int heredoc_fd)
 {
 	t_redir	*new_node;
 	t_redir	*last_node;
 
-	new_node = malloc(sizeof(t_redir));
+	new_node = ft_calloc(1, sizeof(t_redir));
 	if (!new_node)
 		return ;
 	new_node->type = type;
 	new_node->file = ft_strdup(file);
-	new_node->next = NULL;
+	new_node->heredoc_fd = heredoc_fd;
 	if (*redir == NULL)
 		*redir = new_node;
 	else
@@ -79,16 +79,20 @@ static void	add_redir(t_redir **redir, t_token_type type, char *file)
 	}
 }
 
-static void	fill_cmd_args(t_cmd *cmd, t_token **token)
+static void	fill_cmd_args(t_shell *shell, t_cmd *cmd, t_token **token)
 {
 	int	i;
+	int	heredoc_fd;
 
 	i = 0;
 	while (*token != NULL && (*token)->token_type != PIPE)
 	{
 		if (is_redirection((*token)->token_type))
 		{
-			add_redir(&(cmd->redir), (*token)->token_type, (*token)->next->value);
+			heredoc_fd = -1;
+			if ((*token)->token_type == HEREDOC)
+				heredoc_fd = read_heredoc(shell, (*token)->next->value);
+			add_redir(&(cmd->redir), (*token)->token_type, (*token)->next->value, heredoc_fd);
 			*token = (*token)->next->next;
 		}
 		else
@@ -101,7 +105,7 @@ static void	fill_cmd_args(t_cmd *cmd, t_token **token)
 	cmd->args[i] = NULL;
 }
 
-static t_cmd	*parse_cmd(t_token **token)
+static t_cmd	*parse_cmd(t_shell *shell, t_token **token)
 {
 	t_cmd	*cmd;
 	int		argc;
@@ -116,23 +120,25 @@ static t_cmd	*parse_cmd(t_token **token)
 		free(cmd);
 		return (NULL);
 	}
-	fill_cmd_args(cmd, token);
+	fill_cmd_args(shell, cmd, token);
 	if (*token != NULL && (*token)->token_type == PIPE)
 		*token = (*token)->next;
 	return (cmd);
 }
 
-t_cmd	*cmd_table(t_token *token)
+t_cmd	*cmd_table(t_shell *shell)
 {
 	t_cmd	*head;
 	t_cmd	*tail;
 	t_cmd	*new_cmd;
+	t_token	*tok;
 
 	head = NULL;
 	tail = NULL;
-	while (token != NULL)
+	tok = shell->token;
+	while (shell->token != NULL)
 	{
-		new_cmd = parse_cmd(&token);
+		new_cmd = parse_cmd(shell, &tok);
 		if (new_cmd == NULL)
 			break ;
 		if (head == NULL)

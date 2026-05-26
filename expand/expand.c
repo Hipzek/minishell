@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@learner.42.tech>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/15 21:55:49 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/05/16 13:34:22 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/05/18 20:02:13 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,23 +21,28 @@ sur la chaîne value de chaque t_token.
 L'algorithme caractère par caractère :
 
 - Mode IN_SQUOTE : Le $ est un simple caractère littéral. On ne fait rien.
-- Mode NORMAL ou IN_DQUOTE : Si vous croisez un $, vous devez extraire le nom de la variable
-(qui se termine au premier caractère non-alphanumérique ou non-underscore). Cherchez sa valeur dans shell->env et remplacez-la.
-- Cas particulier $? : S'il est suivi d'un ?, remplacez-le directement par la valeur de shell->exit_code.
+- Mode NORMAL ou IN_DQUOTE : Si vous croisez un $, 
+vous devez extraire le nom de la variable
+(qui se termine au premier caractère non-alphanumérique ou non-underscore)
+Cherchez sa valeur dans shell->env et remplacez-la.
+- Cas particulier $? : S'il est suivi d'un ?,
+remplacez-le directement par la valeur de shell->exit_code.
 
 PIÈGES :
 Piège de la variable vide :
 
-- Si l'utilisateur tape echo $VIDE (Mode NORMAL) : la variable est remplacée par du vide,
+- Si l'utilisateur tape echo $VIDE (Mode NORMAL) : la variable est
+remplacée par du vide,
 le token entier doit être supprimé de votre liste.
 - Si l'utilisateur tape echo "$VIDE" (Mode IN_DQUOTE) : le résultat est vide,
 mais la chaîne vide "" doit être conservée comme un token valide.
-- Le signe dollar isolé : Un $ suivi d'un espace ou d'une fin de chaîne (\0) reste un caractère $ littéral.
+- Le signe dollar isolé : Un $ suivi d'un espace ou d'une fin de chaîne (\0)
+reste un caractère $ littéral.
 */
 
 #include "../includes/minishell.h"
 
-static char	*append_var_value(t_shell *shell, char *res, char *str, int *i)
+char	*append_var_value(t_shell *shell, char *res, char *str, int *i)
 {
 	char	*var_name;
 	char	*var_value;
@@ -144,8 +149,7 @@ void	expand_tokens(t_shell *shell)
 			// 1 creation nouvelle chaine
 			new_val = process_expand(shell, current->value);
 			// 2 si expand vide
-			if (new_val && *new_val == '\0' && !ft_strchr(current->value, '\'')
-				&& !ft_strchr(current->value, '"'))
+			if (new_val && *new_val == '\0' && !has_quotes(current->value))
 			{
 				free(new_val);
 				current = del_token_node(&shell->token, prev, current);
