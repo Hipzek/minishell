@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/23 16:15:27 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/05/14 16:15:15 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/05/27 23:41:18 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ Astuce : pour cela capturer le statut PID du dernier
 int	exec_pipeline(t_shell *shell)
 {
 	t_cmd	*current;
-	int		pipe_fd[2];
+	int		pipe_fd[2] = {-1, -1};
 	int		relay_fd;
 	pid_t	pid;
 

@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@learner.42.tech>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/15 21:55:49 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/05/18 20:02:13 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/05/27 23:39:09 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,8 @@ char	*append_var_value(t_shell *shell, char *res, char *str, int *i)
 		res = ft_strjoin(tmp, var_value);
 		free(tmp);
 	}
+	else
+		res = tmp;
 	return (res);
 }
 

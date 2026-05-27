@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/18 18:47:10 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/05/26 17:11:53 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/05/27 23:45:41 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,13 @@ int	read_heredoc(t_shell *shell, char *delim_token)
 	while (1)
 	{
 		line = readline("> ");
+		if (g_sig == SIGINT)
+		{
+			free(real_delim);
+			close(fd[1]);
+			close(fd[0]);
+			return (-1);
+		}
 		if (line == NULL)
 		{
 			printf("minishell: warning: here-document delimited by end-of-file (wanted `%s')\n", real_delim);
