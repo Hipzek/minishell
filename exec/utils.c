@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/26 16:11:47 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/05/11 22:41:40 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/05/27 13:53:25 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,23 +20,50 @@ void	apply_redir(t_shell *shell, t_cmd *cmd)
 	redir = cmd->redir;
 	while (redir != NULL)
 	{
-		if (redir->type == REDIR_IN || redir->type == HEREDOC)
-			fd = open(redir->file, O_RDONLY);
-		// TODO gerer le HEREDOC : creer pipe, ecrire contenu et dup2 la lecture
-		else if (redir->type == REDIR_OUT)
-			fd = open(redir->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		else if (redir->type == APPEND)
-			fd = open(redir->file, O_WRONLY | O_CREAT | O_APPEND, 0644);
-		if (fd < 0)
+		if (redir->type == HEREDOC)
 		{
-			perror(redir->file);
-			clean_and_exit(shell, 1);
-		}
-		if (redir->type == REDIR_IN || redir->type == HEREDOC)
+			fd = redir->heredoc_fd;
+			if (fd < 0)
+			{
+				ft_putstr_fd("minishell: heredoc failed\n", STDERR_FILENO);
+				clean_and_exit(shell, 1);
+			}
 			dup2(fd, STDIN_FILENO);
-		else if (redir->type == REDIR_OUT || redir->type == APPEND)
+			close(fd);
+		}
+		else if (redir->type == REDIR_IN)
+		{
+			fd = open(redir->file, O_RDONLY);
+			if (fd < 0)
+			{
+				perror(redir->file);
+				clean_and_exit(shell, 1);
+			}
+			dup2(fd, STDIN_FILENO);
+			close(fd);
+		}
+		else if (redir->type == REDIR_OUT)
+		{
+			fd = open(redir->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+			if (fd < 0)
+			{
+				perror(redir->file);
+				clean_and_exit(shell, 1);
+			}
 			dup2(fd, STDOUT_FILENO);
-		close(fd);
+			close(fd);
+		}
+		else if (redir->type == APPEND)
+		{
+			fd = open(redir->file, O_WRONLY | O_CREAT | O_APPEND, 0644);
+			if (fd < 0)
+			{
+				perror(redir->file);
+				clean_and_exit(shell, 1);
+			}
+			dup2(fd, STDOUT_FILENO);
+			close(fd);
+		}
 		redir = redir->next;
 	}
 }
