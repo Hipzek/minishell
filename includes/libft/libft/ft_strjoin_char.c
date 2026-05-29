@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/16 13:29:23 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/05/16 13:32:34 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/05/29 11:07:00 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ char	*ft_strjoin_char(char *s, char c)
 
 	if (!s)
 		return (NULL);
-	res = malloc(sizeof(char) * (ft_strlen(s) + 2));
+	res = ft_calloc(ft_strlen(s) + 2, sizeof(char));
 	if (!res)
 	{
 		free(s);

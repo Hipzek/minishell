@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 22:13:48 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/05/11 22:33:36 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/05/29 10:28:44 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,17 +26,19 @@ int	is_numeric(char *str)
 	i = 0;
 	if (!str || str[0] == '\0')
 		return (0);
+	while ((str[i] >= 9 && str[i] <= 13) || str[i] == 32)
+		i++;
 	if (str[i] == '+' || str[i] == '-')
 		i++;
-	if (str[i] == '\0')
+	if (!ft_isdigit(str[i]))
 		return (0);
-	while (str[i] != '\0')
-	{
-		if (!ft_isdigit(str[i]))
-			return (0);
+	while (ft_isdigit(str[i]))
 		i++;
-	}
-	return (1);
+	while ((str[i] >= 9 && str[i] <= 13) || str[i] == 32)
+		i++;
+	if (str[i] == '\0')
+		return (1);
+	return (0);
 }
 
 long long	ft_atoll(char *str, int *error)
