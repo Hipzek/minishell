@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/18 18:47:10 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/05/27 23:45:41 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/09 18:21:08 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,7 @@ int	read_heredoc(t_shell *shell, char *delim_token)
 			break ;
 		}
 		if (expand_flag)
-			line = expand_heredoc_line(shell, line); // TODO
+			line = expand_heredoc_line(shell, line);
 		ft_putendl_fd(line, fd[1]);
 		free(line);
 	}
