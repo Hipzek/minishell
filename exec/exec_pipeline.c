@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/23 16:15:27 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/05/27 23:41:18 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/09 18:58:07 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,18 @@ int	exec_pipeline(t_shell *shell)
 	current = shell->cmd;
 	if (current->next == NULL && is_builtin(current))
 	{
+		if (current->redir != NULL)
+		{
+			if (apply_redir_parent(shell, current) != 0)
+			{
+				dup2(shell->saved_stdin, STDIN_FILENO);
+				dup2(shell->saved_stdout, STDOUT_FILENO);
+				return (1);
+			}
+		}
 		shell->exit_code = exec_builtin(shell, current);
+		dup2(shell->saved_stdin, STDIN_FILENO);
+		dup2(shell->saved_stdout, STDOUT_FILENO);
 		return (shell->exit_code);
 	}
 	while (current != NULL)

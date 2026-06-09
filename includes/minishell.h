@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 18:27:45 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/05/26 15:42:06 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/09 18:59:06 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,6 +147,7 @@ t_cmd	*cmd_table(t_shell *shell);
 int		exec_pipeline(t_shell *shell);
 void	exec_child(t_shell *shell, t_cmd *cmd, int relay_fd, int pipe_fd[2]);
 void	apply_redir(t_shell *shell, t_cmd *cmd);
+int	apply_redir_parent(t_shell *shell, t_cmd *cmd);
 char	*path(char *cmd, char **envp);
 int		is_builtin(t_cmd *cmd);
 int		exec_builtin(t_shell *shell, t_cmd *cmd);
