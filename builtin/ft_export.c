@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/06 11:30:52 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/05/27 23:54:38 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/09 17:08:43 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,6 +158,7 @@ int	ft_export(t_shell *shell, t_cmd *cmd)
 				free(value);
 			}
 			else
+				//add_env_no_value(shell, cmd->args[i]);
 				update_env(shell, cmd->args[i], NULL);
 		}
 		i++;

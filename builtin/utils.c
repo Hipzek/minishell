@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/04 21:18:46 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/05/11 21:52:12 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/09 18:08:05 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,8 @@ static char	*create_env(char *name, char *value)
 	char	*tmp;
 	char	*res;
 
+	if (value == NULL)
+		return (ft_strdup(name));
 	tmp = ft_strjoin(name, "=");
 	if (!tmp)
 		return (NULL);
@@ -122,13 +124,26 @@ Renvoie 0 en cas de succès 1 en cas d'erreur de malloc
 int	update_env(t_shell *shell, char *name, char *value)
 {
 	char	*new_str;
+	int		i;
 
-	if (!shell || !shell->env || !name || !value)
+	if (!shell || !shell->env || !name)
 		return (1);
+	if (value == NULL)
+	{
+		i = 0;
+		while (shell->env[i] != NULL)
+		{
+			if (ft_strncmp(shell->env[i], name, ft_strlen(name)) == 0
+				&& (shell->env[i][ft_strlen(name)] == '='
+				|| shell->env[i][ft_strlen(name)] == '\0'))
+				return (0);
+			i++;
+		}
+	}
 	new_str = create_env(name, value);
 	if (!new_str)
 		return (1);
-	if (replace_env(shell, name, new_str) == 0)
+	if (replace_env(shell, name, new_str) == 1)
 		return (0);
 	return (add_env(shell, new_str));
 }
