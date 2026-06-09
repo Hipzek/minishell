@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/23 16:15:27 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/09 18:58:07 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/09 20:08:18 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -177,6 +177,16 @@ void	exec_child(t_shell *shell, t_cmd *cmd, int relay_fd, int pipe_fd[2])
 		ft_putstr_fd(cmd->args[0], STDERR_FILENO);
 		ft_putstr_fd(": command not found\n", STDERR_FILENO);
 		clean_and_exit(shell, 127);
+	}
+	if (ft_strchr(cmd->args[0], '/') != NULL )
+	{
+		if (access(cmd->args[0], F_OK) == -1)
+		{
+			ft_putstr_fd("minishell: ", STDERR_FILENO);
+			ft_putstr_fd(cmd->args[0], STDERR_FILENO);
+			ft_putstr_fd(": No such file or directory\n", STDERR_FILENO);
+			clean_and_exit(shell, 127);
+		}
 	}
 	execve(cmd->path, cmd->args, shell->env);
 	perror(cmd->args[0]);
