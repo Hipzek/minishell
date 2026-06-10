@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 21:58:05 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/10 13:17:58 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/10 18:49:43 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ static void	free_redir_lst(t_redir *redir)
 	while (redir != NULL)
 	{
 		tmp = redir->next;
-		if (redir->heredoc_fd > 2)
+		if (redir->heredoc_fd >= 0)
 		{
 			close(redir->heredoc_fd);
 			redir->heredoc_fd = -1;
@@ -111,6 +111,16 @@ void	free_shell(t_shell *shell)
 
 void	clean_and_exit(t_shell *shell, int exit_code)
 {
+	if (shell->saved_stdin > 2)
+	{
+		close(shell->saved_stdin);
+		shell->saved_stdin = -1;
+	}
+	if (shell->saved_stdout > 2)
+	{
+		close(shell->saved_stdout);
+		shell->saved_stdout = -1;
+	}
 	free_shell(shell);
 	rl_clear_history();
 	exit(exit_code);

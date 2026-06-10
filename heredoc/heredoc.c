@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/18 18:47:10 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/10 13:01:04 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/10 19:34:08 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,11 +91,16 @@ int expand_flag, int write_fd)
 static void	heredoc_child(t_shell *shell, char *real_delim,
 int expand_flag, int fd[2])
 {
+	
+	// close(shell->saved_stdin);
+	// close(shell->saved_stdout);
 	close(fd[0]);
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_IGN);
 	do_heredoc_loop(shell, real_delim, expand_flag, fd[1]);
 	free(real_delim);
+	// on close dans la fonction free_shell
+	free_shell(shell);
 	close(fd[1]);
 	exit(0);
 }
@@ -117,6 +122,8 @@ int fd[2], pid_t pid)
 		write(1, "\n", 1);
 		return (-1);
 	}
+	// close(shell->saved_stdin);
+	// close(shell->saved_stdout);
 	return (fd[0]);
 }
 
@@ -131,10 +138,10 @@ int	read_heredoc(t_shell *shell, char *delim_token)
 	expand_flag = !has_quotes(delim_token);
 	real_delim = clean_token_value(delim_token);
 	if (pipe(fd) == -1)
-		return (free(real_delim), -1);
+		return (free(real_delim), close(shell->saved_stdin), close(shell->saved_stdout), -1);
 	pid = fork();
 	if (pid == -1)
-		return (close(fd[0]), close(fd[1]), free(real_delim), -1);
+		return (close(shell->saved_stdin), close(shell->saved_stdout), close(fd[0]), close(fd[1]), free(real_delim), -1);
 	if (pid == 0)
 		heredoc_child(shell, real_delim, expand_flag, fd);
 	return (heredoc_parent(shell, real_delim, fd, pid));

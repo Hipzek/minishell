@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/26 16:11:47 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/09 18:58:37 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/10 17:26:40 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ int	apply_redir_parent(t_shell *shell, t_cmd *cmd)
 				return (1);
 			dup2(fd, STDIN_FILENO);
 			close(fd);
+			redir->heredoc_fd = -1;
 		}
 		else if (redir->type == REDIR_IN)
 		{
@@ -80,11 +81,12 @@ void	apply_redir(t_shell *shell, t_cmd *cmd)
 			fd = redir->heredoc_fd;
 			if (fd < 0)
 			{
-				ft_putstr_fd("minishell: heredoc failed\n", STDERR_FILENO);
-				clean_and_exit(shell, 1);
+				//ft_putstr_fd("minishell: heredoc failed\n", STDERR_FILENO);
+				clean_and_exit(shell, 130);
 			}
 			dup2(fd, STDIN_FILENO);
 			close(fd);
+			redir->heredoc_fd = -1;
 		}
 		else if (redir->type == REDIR_IN)
 		{

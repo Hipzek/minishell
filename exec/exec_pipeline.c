@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/23 16:15:27 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/10 13:56:02 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/10 18:55:57 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,22 @@ Astuce : pour cela capturer le statut PID du dernier
 
 #include "../includes/minishell.h"
 
+static void	close_heredoc_fds(t_cmd *cmd)
+{
+	t_redir	*redir;
+
+	redir = cmd->redir;
+	while (redir != NULL)
+	{
+		if (redir->type == HEREDOC && redir->heredoc_fd >= 0)
+		{
+			close(redir->heredoc_fd);
+			redir->heredoc_fd = -1;
+		}
+		redir = redir->next;
+	}
+}
+
 int	exec_pipeline(t_shell *shell)
 {
 	t_cmd	*current;
@@ -99,12 +115,14 @@ int	exec_pipeline(t_shell *shell)
 			{
 				dup2(shell->saved_stdin, STDIN_FILENO);
 				dup2(shell->saved_stdout, STDOUT_FILENO);
+				close_heredoc_fds(current);
 				return (1);
 			}
 		}
 		shell->exit_code = exec_builtin(shell, current);
 		dup2(shell->saved_stdin, STDIN_FILENO);
 		dup2(shell->saved_stdout, STDOUT_FILENO);
+		close_heredoc_fds(current);
 		return (shell->exit_code);
 	}
 	while (current != NULL)
@@ -134,6 +152,7 @@ int	exec_pipeline(t_shell *shell)
 		}
 		if (pid == 0)
 			exec_child(shell, current, relay_fd, pipe_fd);
+		close_heredoc_fds(current);
 		if (current->next != NULL)
 		{
 			close(pipe_fd[1]);
@@ -158,6 +177,8 @@ void	exec_child(t_shell *shell, t_cmd *cmd, int relay_fd, int pipe_fd[2])
 	int			ret;
 	struct stat	path_stat;
 
+	//close(shell->saved_stdin);
+	//close(shell->saved_stdout);
 	setup_child_signal();
 	if (relay_fd != -1)
 	{
@@ -169,7 +190,7 @@ void	exec_child(t_shell *shell, t_cmd *cmd, int relay_fd, int pipe_fd[2])
 		close(pipe_fd[0]);
 		dup2(pipe_fd[1], STDOUT_FILENO);
 		close(pipe_fd[1]);
-	}
+	}	
 	apply_redir(shell, cmd);
 	if (is_builtin(cmd))
 	{

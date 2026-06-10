@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/21 16:20:37 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/05/26 15:41:04 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/10 18:00:55 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,18 @@ void	init_shell(t_shell *shell, char **env)
 	shell->env = copy_env(env);
 	shell->exit_code = 0;
 	shell->saved_stdin = dup(STDIN_FILENO);
+	if (shell->saved_stdin == -1)
+	{
+		perror("dup");
+		return;
+	}
 	shell->saved_stdout = dup(STDOUT_FILENO);
+	if (shell->saved_stdout == -1)
+	{
+		close(shell->saved_stdin);
+		perror("dup");
+		return;
+	}
 }
 
 // LEXER (HISHEM) -> liste de token (shell.token)

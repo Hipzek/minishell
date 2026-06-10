@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/22 13:59:43 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/05/26 17:12:25 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/10 21:11:37 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ static int	count_args(t_token *token)
 	return (count);
 }
 
-static void	add_redir(t_redir **redir, t_token_type type,
+static int	add_redir(t_redir **redir, t_token_type type,
 	char *file, int heredoc_fd)
 {
 	t_redir	*new_node;
@@ -65,9 +65,20 @@ static void	add_redir(t_redir **redir, t_token_type type,
 
 	new_node = ft_calloc(1, sizeof(t_redir));
 	if (!new_node)
-		return ;
+	{
+		if (heredoc_fd >= 0)
+			close(heredoc_fd);
+		return (-1);
+	}
 	new_node->type = type;
 	new_node->file = ft_strdup(file);
+	if (!new_node->file)
+	{
+		if (heredoc_fd >= 0)
+			close(heredoc_fd);
+		free(new_node);
+		return (-1);
+	}
 	new_node->heredoc_fd = heredoc_fd;
 	if (*redir == NULL)
 		*redir = new_node;
@@ -78,9 +89,10 @@ static void	add_redir(t_redir **redir, t_token_type type,
 			last_node = last_node->next;
 		last_node->next = new_node;
 	}
+	return (0);
 }
 
-static void	fill_cmd_args(t_shell *shell, t_cmd *cmd, t_token **token)
+static int	fill_cmd_args(t_shell *shell, t_cmd *cmd, t_token **token)
 {
 	int	i;
 	int	heredoc_fd;
@@ -93,18 +105,28 @@ static void	fill_cmd_args(t_shell *shell, t_cmd *cmd, t_token **token)
 			heredoc_fd = -1;
 			if ((*token)->token_type == HEREDOC)
 				heredoc_fd = read_heredoc(shell, (*token)->next->value);
-			add_redir(&(cmd->redir), (*token)->token_type,
-				(*token)->next->value, heredoc_fd);
+			if (heredoc_fd == -1)
+				return (-1);
+			if (add_redir(&(cmd->redir), (*token)->token_type,
+				(*token)->next->value, heredoc_fd) == -1)
+			{
+				if (heredoc_fd >= 0)
+					close(heredoc_fd);
+				return (-1);
+			}
 			*token = (*token)->next->next;
 		}
 		else
 		{
 			cmd->args[i] = ft_strdup((*token)->value);
+			if (cmd->args[i] == NULL)
+				return (-1);
 			i++;
 			*token = (*token)->next;
 		}
 	}
 	cmd->args[i] = NULL;
+	return (0);
 }
 
 static t_cmd	*parse_cmd(t_shell *shell, t_token **token)
@@ -122,7 +144,11 @@ static t_cmd	*parse_cmd(t_shell *shell, t_token **token)
 		free(cmd);
 		return (NULL);
 	}
-	fill_cmd_args(shell, cmd, token);
+	if (fill_cmd_args(shell, cmd, token) == -1)
+	{
+		free_cmd_lst(cmd);
+		return (NULL);
+	}
 	if (*token != NULL && (*token)->token_type == PIPE)
 		*token = (*token)->next;
 	return (cmd);
@@ -142,7 +168,10 @@ t_cmd	*cmd_table(t_shell *shell)
 	{
 		new_cmd = parse_cmd(shell, &tok);
 		if (new_cmd == NULL)
-			break ;
+		{
+			free_cmd_lst(head);
+			return (NULL);
+		}
 		if (head == NULL)
 		{
 			head = new_cmd;
