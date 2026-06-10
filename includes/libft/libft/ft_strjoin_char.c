@@ -32,7 +32,7 @@ char	*ft_strjoin_char(char *s, char c)
 		i++;
 	}
 	res[i] = c;
-	res[i+1] = '\0';
+	res[i + 1] = '\0';
 	free(s);
 	return (res);
 }

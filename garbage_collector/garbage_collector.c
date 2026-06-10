@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 21:58:05 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/05/15 19:50:50 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/10 13:17:58 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,11 @@ static void	free_redir_lst(t_redir *redir)
 	while (redir != NULL)
 	{
 		tmp = redir->next;
+		if (redir->heredoc_fd > 2)
+		{
+			close(redir->heredoc_fd);
+			redir->heredoc_fd = -1;
+		}
 		if (redir->file)
 			free(redir->file);
 		free(redir);

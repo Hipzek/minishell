@@ -21,10 +21,12 @@ se font de manière atomique (en une seule instruction processeur)
 
 La consigne demande de gérer Ctrl+C, Ctrl+D et Ctrl+\ :
 
-- Ctrl+C (SIGINT) et Ctrl+\ (SIGQUIT) sont de vrais signaux envoyés par le terminal
+- Ctrl+C (SIGINT) et Ctrl+\ (SIGQUIT)
+sont de vrais signaux envoyés par le terminal
 
 - Ctrl+D est une condition de Fin de Fichier (EOF). Il ne génère aucun signal
-Lorsque l'utilisateur tape Ctrl+D, la fonction readline() renvoie simplement un pointeur NULL
+Lorsque l'utilisateur tape Ctrl+D, la fonction readline()
+renvoie simplement un pointeur NULL
 
 Il ne faut donc jamais tenter d'intercepter Ctrl+D avec sigaction
 On le gere directement dans la boucle principale
@@ -35,7 +37,6 @@ On le gere directement dans la boucle principale
 static void	handle_signal(int sig)
 {
 	g_sig = sig;
-
 	ft_putchar_fd('\n', STDOUT_FILENO);
 	rl_on_new_line();
 	rl_replace_line("", 0);
@@ -51,7 +52,6 @@ void	setup_inter_signals(void)
 	sigemptyset(&sa_int.sa_mask);
 	sa_int.sa_flags = 0;
 	sigaction(SIGINT, &sa_int, NULL);
-
 	sa_quit.sa_handler = SIG_IGN;
 	sigemptyset(&sa_quit.sa_mask);
 	sa_quit.sa_flags = 0;
@@ -71,7 +71,7 @@ void	setup_exec_signals(void)
 
 void	setup_child_signal(void)
 {
-	struct	sigaction	sa;
+	struct sigaction	sa;
 
 	sa.sa_handler = SIG_DFL;
 	sigemptyset(&sa.sa_mask);

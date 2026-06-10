@@ -96,7 +96,8 @@ void	apply_redir(t_shell *shell, t_cmd *cmd)
 			}
 			if (dup2(fd, STDIN_FILENO) == -1)
 			{
-				ft_putstr_fd("minishell: No such file or directory\n", STDERR_FILENO);
+				ft_putstr_fd("minishell: No such file or directory\n",
+					STDERR_FILENO);
 				clean_and_exit(shell, 1);
 			}
 			close(fd);
@@ -172,9 +173,13 @@ int	exec_builtin(t_shell *shell, t_cmd *cmd)
 		return (ft_env(shell, cmd));
 	if (ft_strncmp(name, "exit", 5) == 0)
 		return (ft_exit(shell, cmd));
-	return (-1); // si c'est pas un builtin
+	return (-1);
 }
 
+/*
+if (WIFEXITED(status)) //Terminaison classique (exit(0) ou exit(127))
+else if (WIFSIGNALED(status)) //Terminaison forcee par un signal
+*/
 void	wait_pipeline(t_shell *shell, pid_t last_pid)
 {
 	int		status;
@@ -185,9 +190,9 @@ void	wait_pipeline(t_shell *shell, pid_t last_pid)
 	{
 		if (wait_pid == last_pid)
 		{
-			if (WIFEXITED(status)) //Terminaison classique (exit(0) ou exit(127))
+			if (WIFEXITED(status))
 				shell->exit_code = WEXITSTATUS(status);
-			else if (WIFSIGNALED(status)) //Terminaison forcee par un signal
+			else if (WIFSIGNALED(status))
 			{
 				shell->exit_code = 128 + WTERMSIG(status);
 				if (WTERMSIG(status) == SIGQUIT)

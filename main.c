@@ -20,7 +20,7 @@ void	init_struct_lex(t_struct_lex *lex)
 	lex->i = 0;
 	lex->start = -1;
 	lex->state = NORMAL;
-	lex->head_lst = NULL; // CF renommer head_token
+	lex->head_lst = NULL;
 }
 
 static char	**copy_env(char **env)
@@ -55,11 +55,8 @@ void	init_shell(t_shell *shell, char **env)
 
 // LEXER (HISHEM) -> liste de token (shell.token)
 		// PARSEUR/SYNTAX -> valid_syntax(shell.token)
-		
 		// HEREDOC + EXPAND + REMOVE QUOTES
-	
 		// CMD TABLE -> liste de cmd = cmd_table(shell.token)
-
 		// EXEC -> exec_pipeline(shell)
 		// 	----> fork() --> exec_chil()
 		// 		     --> apply_redir()
@@ -67,11 +64,10 @@ void	init_shell(t_shell *shell, char **env)
 		// 	 	     --> path() -> execve()
 		// 	----> wait_pipeline()
 
-
 int	main(int argc, char **argv, char **env)
 {
-	t_shell	shell;
-	char	*line;
+	t_shell			shell;
+	char			*line;
 	t_struct_lex	lex;
 
 	(void)argc;
@@ -93,7 +89,6 @@ int	main(int argc, char **argv, char **env)
 		}
 		if (*line)
 			add_history(line);
-		
 		init_struct_lex(&lex);
 		lex.raw = line;
 		if (ft_do_lex(&lex) == 0 && lex.head_lst != NULL)

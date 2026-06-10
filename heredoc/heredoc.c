@@ -72,8 +72,8 @@ int expand_flag, int write_fd)
 		line = readline("> ");
 		if (line == NULL)
 		{
-			printf("minishell: warning: ");
-			printf("here-document delimited by end-of-file (wanted `%s')\n", real_delim);
+			printf("minishell: warning: here-document");
+			printf(" delimited by end-of-file (wanted `%s')\n", real_delim);
 			break ;
 		}
 		if (ft_strcmp(line, real_delim) == 0)

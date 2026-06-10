@@ -57,7 +57,8 @@ static int	count_args(t_token *token)
 	return (count);
 }
 
-static void	add_redir(t_redir **redir, t_token_type type, char *file, int heredoc_fd)
+static void	add_redir(t_redir **redir, t_token_type type,
+	char *file, int heredoc_fd)
 {
 	t_redir	*new_node;
 	t_redir	*last_node;
@@ -92,7 +93,8 @@ static void	fill_cmd_args(t_shell *shell, t_cmd *cmd, t_token **token)
 			heredoc_fd = -1;
 			if ((*token)->token_type == HEREDOC)
 				heredoc_fd = read_heredoc(shell, (*token)->next->value);
-			add_redir(&(cmd->redir), (*token)->token_type, (*token)->next->value, heredoc_fd);
+			add_redir(&(cmd->redir), (*token)->token_type,
+				(*token)->next->value, heredoc_fd);
 			*token = (*token)->next->next;
 		}
 		else
