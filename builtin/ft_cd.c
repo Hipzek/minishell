@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 16:14:00 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/05/11 20:39:17 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/10 12:58:44 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,16 +37,14 @@ cd doit afficher l'erreur bash: cd: HOME not set
 
 #include "../includes/minishell.h"
 
-int	ft_cd(t_shell *shell, t_cmd *cmd)
+static char	*get_cd_path(t_shell *shell, t_cmd *cmd)
 {
 	char	*path;
-	char	*old_pwd;
-	char	*new_pwd;
 
 	if (cmd->args[1] != NULL && cmd->args[2] != NULL)
 	{
 		ft_putstr_fd("cd: too many arguments\n", STDERR_FILENO);
-		return (1);
+		return (NULL);
 	}
 	if (cmd->args[1] == NULL)
 	{
@@ -54,11 +52,22 @@ int	ft_cd(t_shell *shell, t_cmd *cmd)
 		if (path == NULL)
 		{
 			ft_putstr_fd("cd: HOME not set\n", STDERR_FILENO);
-			return (1);
+			return (NULL);
 		}
+		return (path);
 	}
-	else
-		path = cmd->args[1];
+	return (cmd->args[1]);
+}
+
+int	ft_cd(t_shell *shell, t_cmd *cmd)
+{
+	char	*path;
+	char	*old_pwd;
+	char	*new_pwd;
+
+	path = get_cd_path(shell, cmd);
+	if (path == NULL)
+		return (1);
 	old_pwd = getcwd(NULL, 0);
 	if (chdir(path) == -1)
 	{

@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/18 18:47:10 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/10 12:12:22 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/10 13:01:04 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,8 +72,8 @@ int expand_flag, int write_fd)
 		line = readline("> ");
 		if (line == NULL)
 		{
-			printf("minishell: warning: here-document delimited by
-			end-of-file (wanted `%s')\n", real_delim);
+			printf("minishell: warning: ");
+			printf("here-document delimited by end-of-file (wanted `%s')\n", real_delim);
 			break ;
 		}
 		if (ft_strcmp(line, real_delim) == 0)
