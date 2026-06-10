@@ -104,9 +104,11 @@ static int	fill_cmd_args(t_shell *shell, t_cmd *cmd, t_token **token)
 		{
 			heredoc_fd = -1;
 			if ((*token)->token_type == HEREDOC)
+			{
 				heredoc_fd = read_heredoc(shell, (*token)->next->value);
-			if (heredoc_fd == -1)
-				return (-1);
+				if (heredoc_fd == -1)
+					return (-1);
+			}
 			if (add_redir(&(cmd->redir), (*token)->token_type,
 				(*token)->next->value, heredoc_fd) == -1)
 			{
