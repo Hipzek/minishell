@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/23 16:15:27 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/09 20:08:18 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/10 11:33:58 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,6 +150,7 @@ int	exec_pipeline(t_shell *shell)
 void	exec_child(t_shell *shell, t_cmd *cmd, int relay_fd, int pipe_fd[2])
 {
 	int	ret;
+	struct stat	path_stat; // pour detecter les dossier ("is a directory")
 
 	setup_child_signal();
 	if (relay_fd != -1)
@@ -171,20 +172,41 @@ void	exec_child(t_shell *shell, t_cmd *cmd, int relay_fd, int pipe_fd[2])
 	}
 	if (cmd->args == NULL || cmd->args[0] == NULL)
 		clean_and_exit(shell, 0);
-	cmd->path = path(cmd->args[0], shell->env);
-	if (cmd->path == NULL)
-	{
-		ft_putstr_fd(cmd->args[0], STDERR_FILENO);
-		ft_putstr_fd(": command not found\n", STDERR_FILENO);
-		clean_and_exit(shell, 127);
-	}
 	if (ft_strchr(cmd->args[0], '/') != NULL )
 	{
+		// Est ce que le fichier exite ?
 		if (access(cmd->args[0], F_OK) == -1)
 		{
 			ft_putstr_fd("minishell: ", STDERR_FILENO);
 			ft_putstr_fd(cmd->args[0], STDERR_FILENO);
 			ft_putstr_fd(": No such file or directory\n", STDERR_FILENO);
+			clean_and_exit(shell, 127);
+		}
+		// Est ce que c'est un dossier ?
+		if (stat(cmd->args[0], &path_stat) == 0 && S_ISDIR(path_stat.st_mode))
+		{
+			ft_putstr_fd("minishell: ", STDERR_FILENO);
+			ft_putstr_fd(cmd->args[0], STDERR_FILENO);
+			ft_putstr_fd(": Is a directory\n", STDERR_FILENO);
+			clean_and_exit(shell, 126);
+		}
+		// Est ce qu'on a le droit de l executer ?
+		if (access(cmd->args[0], X_OK) == -1)
+		{
+			ft_putstr_fd("minishell: ", STDERR_FILENO);
+			ft_putstr_fd(cmd->args[0], STDERR_FILENO);
+			ft_putstr_fd(": Permission denied\n", STDERR_FILENO);
+			clean_and_exit(shell, 126);
+		}
+		cmd->path = ft_strdup(cmd->args[0]);
+	}
+	else
+	{
+		cmd->path = path(cmd->args[0], shell->env);
+		if (cmd->path == NULL)
+		{
+			ft_putstr_fd(cmd->args[0], STDERR_FILENO);
+			ft_putstr_fd(": command not found\n", STDERR_FILENO);
 			clean_and_exit(shell, 127);
 		}
 	}

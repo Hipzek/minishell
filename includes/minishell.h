@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 18:27:45 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/09 18:59:06 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/10 11:36:14 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 # include <stddef.h>
 # include <limits.h>
 # include "libft/libft.h"
+# include <sys/stat.h>
 
 extern volatile sig_atomic_t	g_sig;
 
