@@ -128,6 +128,9 @@ void	apply_redir(t_shell *shell, t_cmd *cmd)
 		}
 		redir = redir->next;
 	}
+	printf("FIN DU TRAITE DES REDIRECTIONS\n");
+	// printf(" FD = %d\n", fd);
+	// ft_print_cmd(cmd);
 }
 
 int	is_builtin(t_cmd *cmd)
@@ -205,4 +208,59 @@ void	wait_pipeline(t_shell *shell, pid_t last_pid)
 		}
 		wait_pid = waitpid(-1, &status, 0);
 	}
+}
+
+// TODO : A supprimer au moment de la correction
+void	ft_print_arr(char **arr) {
+	int i = -1;
+
+	while (arr[++i])
+		printf("%s\n", arr[i]);
+}
+
+void	ft_print_ttype(t_token_type type) {
+	printf("TYPE ");
+	if (type == WORD)
+		printf("WORD ");
+	else if (type == PIPE)
+		printf("PIPE ");
+	else if (type == REDIR_IN)
+		printf("REDIR_IN ");
+	else if (type == REDIR_OUT)
+		printf("REDIR_OUT ");
+	else if (type == APPEND)
+		printf("APPEND ");
+	else if (type == HEREDOC)
+		printf("HEREDOC ");
+}
+
+void	ft_print_token(t_token *token) {
+	ft_print_ttype(token->token_type);
+	printf("VALUE = %s\n", token->value);
+}
+
+void	ft_print_redir(t_redir *redir) {
+	ft_print_ttype(redir->type);
+	printf(" PATH = %s || FD = %d\n", redir->file, redir->heredoc_fd); 
+}
+
+void	ft_print_cmd(t_cmd *cmd) {
+	printf("ARGS = ");
+	ft_print_arr(cmd->args);
+	printf("\nPATH = %s|| PID = %d\n", cmd->path, cmd->pid);
+}
+
+void	ft_print_shell(t_shell *shell, int mod) {
+	printf("SHELL CONTAINS \n");
+	if (mod == 1)
+		ft_print_arr(shell->env);
+	if (mod == 0)
+	{
+		while (shell->token) {
+			ft_print_token(shell->token);
+			shell->token = shell->token->next;
+		}
+	}
+	printf("STDIN = [%d] || STDOUT = [%d]\n", shell->saved_stdin, shell->saved_stdout);
+	printf("EXIT CODE = [%d]\n", shell->exit_code);
 }

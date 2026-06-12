@@ -139,6 +139,7 @@ static t_cmd	*parse_cmd(t_shell *shell, t_token **token)
 	cmd = ft_calloc(1, sizeof(t_cmd));
 	if (!cmd)
 		return (NULL);
+	shell->cmd = cmd;
 	argc = count_args(*token);
 	cmd->args = ft_calloc(argc + 1, sizeof(char *));
 	if (!cmd->args)

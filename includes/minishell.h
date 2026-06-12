@@ -102,11 +102,11 @@ typedef struct s_cmd
 typedef struct s_shell
 {
 	char	**env;
-	int		exit_code;
 	t_token	*token;
 	t_cmd	*cmd;
 	int		saved_stdin;
 	int		saved_stdout;
+	int		exit_code;
 }	t_shell;
 
 // --------- FONCTIONS -------------
@@ -208,5 +208,13 @@ int			ft_append(t_struct_lex *lex);
 int			ft_heredoc(t_struct_lex *lex);
 int			ft_redir_out(t_struct_lex *lex);
 int			ft_redir_in(t_struct_lex *lex);
+
+// OUTPUT TESTS
+void	ft_print_arr(char **arr) ;
+void	ft_print_ttype(t_token_type type) ;
+void	ft_print_token(t_token *token) ;
+void	ft_print_redir(t_redir *redir) ;
+void	ft_print_cmd(t_cmd *cmd) ;
+void	ft_print_shell(t_shell *shell, int mod);
 
 #endif
