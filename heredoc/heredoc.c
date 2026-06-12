@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/18 18:47:10 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/10 19:34:08 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/12 19:23:07 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,6 +98,7 @@ int expand_flag, int fd[2])
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_IGN);
 	do_heredoc_loop(shell, real_delim, expand_flag, fd[1]);
+//	printf("%d\n", getpid());
 	free(real_delim);
 	// on close dans la fonction free_shell
 	free_shell(shell);

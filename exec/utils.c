@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/26 16:11:47 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/10 17:26:40 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/12 19:23:48 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,7 +128,7 @@ void	apply_redir(t_shell *shell, t_cmd *cmd)
 		}
 		redir = redir->next;
 	}
-	printf("FIN DU TRAITE DES REDIRECTIONS\n");
+//	printf("FIN DU TRAITE DES REDIRECTIONS\n");
 	// printf(" FD = %d\n", fd);
 	// ft_print_cmd(cmd);
 }
@@ -210,6 +210,7 @@ void	wait_pipeline(t_shell *shell, pid_t last_pid)
 	}
 }
 
+/*
 // TODO : A supprimer au moment de la correction
 void	ft_print_arr(char **arr) {
 	int i = -1;
@@ -263,4 +264,4 @@ void	ft_print_shell(t_shell *shell, int mod) {
 	}
 	printf("STDIN = [%d] || STDOUT = [%d]\n", shell->saved_stdin, shell->saved_stdout);
 	printf("EXIT CODE = [%d]\n", shell->exit_code);
-}
+}*/

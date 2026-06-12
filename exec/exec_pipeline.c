@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/23 16:15:27 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/10 18:55:57 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/12 19:22:08 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,11 +126,11 @@ int	exec_pipeline(t_shell *shell)
 		dup2(shell->saved_stdin, STDIN_FILENO);
 		dup2(shell->saved_stdout, STDOUT_FILENO);
 		close_heredoc_fds(current);
-		printf("CURRENT CMD \n");
-		ft_print_cmd(current);
+//		printf("CURRENT CMD \n");
+//		ft_print_cmd(current);
 		// close(shell->saved_stdin);
 		// close(shell->saved_stdout);
-		printf("INFD = %d || OUTFD = %d\n", shell->saved_stdin, shell->saved_stdout);
+//		printf("INFD = %d || OUTFD = %d\n", shell->saved_stdin, shell->saved_stdout);
 		return (shell->exit_code);
 	}
 	while (current != NULL)
@@ -190,6 +190,7 @@ void	exec_child(t_shell *shell, t_cmd *cmd, int relay_fd, int pipe_fd[2])
 
 	//close(shell->saved_stdin);
 	//close(shell->saved_stdout);
+//	printf("%d\n", getpid());
 	setup_child_signal();
 	// printf("IN CHILD\n");
 	// printf("PIPE[0] = %d || PIPE[1] = %d\n", pipe_fd[0], pipe_fd[1]);
@@ -213,9 +214,9 @@ void	exec_child(t_shell *shell, t_cmd *cmd, int relay_fd, int pipe_fd[2])
 	if (is_builtin(cmd))
 	{
 		ret = exec_builtin(shell, cmd);
-		printf("BEFORRRRRRRRRRRRRRRE\n");
+//		printf("BEFORRRRRRRRRRRRRRRE\n");
 		clean_and_exit(shell, ret);
-		printf("AFTERRRRRRRRRRRRRRRRR\n");
+//		printf("AFTERRRRRRRRRRRRRRRRR\n");
 
 	}
 	if (cmd->args == NULL || cmd->args[0] == NULL)
