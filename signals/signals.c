@@ -34,7 +34,7 @@ On le gere directement dans la boucle principale
 
 #include "../includes/minishell.h"
 
-static void	handle_signal(int sig)
+void	handle_signal(int sig)
 {
 	g_sig = sig;
 	ft_putchar_fd('\n', STDOUT_FILENO);

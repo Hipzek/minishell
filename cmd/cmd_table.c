@@ -105,7 +105,7 @@ static int	fill_cmd_args(t_shell *shell, t_cmd *cmd, t_token **token)
 			heredoc_fd = -1;
 			if ((*token)->token_type == HEREDOC)
 			{
-				heredoc_fd = read_heredoc(shell, (*token)->next->value);
+				heredoc_fd = read_heredoc(shell, (*token)->next->value, cmd);
 				if (heredoc_fd == -1)
 					return (-1);
 			}
@@ -139,7 +139,7 @@ static t_cmd	*parse_cmd(t_shell *shell, t_token **token)
 	cmd = ft_calloc(1, sizeof(t_cmd));
 	if (!cmd)
 		return (NULL);
-	shell->cmd = cmd;
+	//shell->cmd = cmd;
 	argc = count_args(*token);
 	cmd->args = ft_calloc(argc + 1, sizeof(char *));
 	if (!cmd->args)
@@ -185,6 +185,7 @@ t_cmd	*cmd_table(t_shell *shell)
 			tail->next = new_cmd;
 			tail = new_cmd;
 		}
+		shell->cmd = head;
 	}
 	return (head);
 }

@@ -137,7 +137,7 @@ void		remove_quotes(t_shell *shell);
 
 // HEREDOC
 int			has_quotes(char *str);
-int			read_heredoc(t_shell *shell, char *delim_token);
+int			read_heredoc(t_shell *shell, char *delim_token, t_cmd *current_cmd);
 
 // TABLE CMD
 t_cmd		*cmd_table(t_shell *shell);
@@ -175,6 +175,7 @@ void		clean_and_exit(t_shell *shell, int exit_code);
 void		setup_inter_signals(void);
 void		setup_exec_signals(void);
 void		setup_child_signal(void);
+void		handle_signal(int sig);
 
 // ----------- LEXER + VALID_SYNTAX -------------
 
