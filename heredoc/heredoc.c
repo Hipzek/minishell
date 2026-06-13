@@ -51,7 +51,7 @@ static char	*expand_heredoc_line(t_shell *shell, char *str)
 	while (str[i])
 	{
 		if (str[i] == '$' && is_valid_dollar(str[i + 1]))
-			res = append_var_value(shell, res, str, &i);
+			res = append_var_value(shell, res, str, &i, NORMAL);
 		else
 		{
 			res = ft_strjoin_char(res, str[i]);

@@ -42,10 +42,41 @@ reste un caractère $ littéral.
 
 #include "../includes/minishell.h"
 
-char	*append_var_value(t_shell *shell, char *res, char *str, int *i)
+static char	*reduce_spaces(char *str)
+{
+	char	*res;
+	int		i;
+	int		space_count;
+
+	res = ft_strdup("");
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] == ' ' || str[i] == '\t')
+		{
+			space_count = 0;
+			while (str[i] && (str[i] == ' ' || str[i] == '\t'))
+			{
+				space_count++;
+				i++;
+			}
+			if (space_count > 0)
+				res = ft_strjoin_char(res, ' ');
+		}
+		else
+		{
+			res = ft_strjoin_char(res, str[i]);
+			i++;
+		}
+	}
+	return (res);
+}
+
+char	*append_var_value(t_shell *shell, char *res, char *str, int *i, t_state state)
 {
 	char	*var_name;
 	char	*var_value;
+	char	*processed_value;
 	int		start;
 	char	*tmp;
 
@@ -70,7 +101,15 @@ char	*append_var_value(t_shell *shell, char *res, char *str, int *i)
 	free(var_name);
 	if (var_value != NULL)
 	{
-		res = ft_strjoin(tmp, var_value);
+		// En mode NORMAL (non-quoted), réduire les espaces multiples
+		if (state == NORMAL)
+		{
+			processed_value = reduce_spaces(var_value);
+			res = ft_strjoin(tmp, processed_value);
+			free(processed_value);
+		}
+		else
+			res = ft_strjoin(tmp, var_value);
 		free(tmp);
 	}
 	else
@@ -110,7 +149,7 @@ static char	*process_expand(t_shell *shell, char *str)
 			state = NORMAL;
 		if (str[i] == '$' && state != IN_SQUOTE && is_valid_dollar(str[i + 1]))
 		{
-			res = append_var_value(shell, res, str, &i);
+			res = append_var_value(shell, res, str, &i, state);
 		}
 		else
 		{

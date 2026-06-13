@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 18:27:45 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/10 17:25:44 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/13 13:52:13 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,7 +129,7 @@ void		ft_putstr_fd(char *s, int fd);
 // EXPAND
 void		expand_tokens(t_shell *shell);
 int			is_valid_dollar(char c);
-char		*append_var_value(t_shell *shell, char *res, char *str, int *i);
+char		*append_var_value(t_shell *shell, char *res, char *str, int *i, t_state state);
 
 // REMOVE QUOTES
 char		*clean_token_value(char *str);
