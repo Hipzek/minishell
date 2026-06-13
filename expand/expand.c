@@ -128,6 +128,7 @@ int	is_valid_dollar(char c)
 	return (1);
 }
 
+/*
 static char	*process_expand(t_shell *shell, char *str)
 {
 	char	*res;
@@ -150,6 +151,65 @@ static char	*process_expand(t_shell *shell, char *str)
 		if (str[i] == '$' && state != IN_SQUOTE && is_valid_dollar(str[i + 1]))
 		{
 			res = append_var_value(shell, res, str, &i, state);
+		}
+		else
+		{
+			res = ft_strjoin_char(res, str[i]);
+			i++;
+		}
+	}
+	return (res);
+}
+*/
+
+static char	*process_expand(t_shell *shell, char *str)
+{
+	char	*res;
+	t_state	state;
+	int		i;
+
+	res = ft_strdup("");
+	state = NORMAL;
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] == '\'' && state == NORMAL)
+			state = IN_SQUOTE;
+		else if (str[i] == '\'' && state == IN_SQUOTE)
+			state = NORMAL;
+		else if (str[i] == '"' && state == NORMAL)
+			state = IN_DQUOTE;
+		else if (str[i] == '"' && state == IN_DQUOTE)
+			state = NORMAL;
+
+		if (str[i] == '$' && state != IN_SQUOTE)
+		{
+			if (str[i + 1] == '\0' || str[i + 1] == ' ' || str[i + 1] == '\t')
+			{
+				res = ft_strjoin_char(res, str[i]);
+				i++;
+			}
+			else if ((str[i + 1] == '"' || str[i + 1] == '\'') && state == NORMAL)
+			{
+				i++; /* skip the $, let quote logic handle the rest */
+			}
+			else if (str[i + 1] == '?')
+			{
+				res = append_var_value(shell, res, str, &i, state);
+			}
+			else if (ft_isdigit(str[i + 1]))
+			{
+				i += 2; /* $digit -> empty, keep rest literal */
+			}
+			else if (ft_isalpha(str[i + 1]) || str[i + 1] == '_')
+			{
+				res = append_var_value(shell, res, str, &i, state);
+			}
+			else
+			{
+				res = ft_strjoin_char(res, str[i]);
+				i++;
+			}
 		}
 		else
 		{

@@ -58,6 +58,7 @@ void	debug_fds(const char *label)
 Expand les $VAR d'env
 guillemets ignoriees
 */
+/*
 static char	*expand_heredoc_line(t_shell *shell, char *str)
 {
 	char	*res;
@@ -71,6 +72,42 @@ static char	*expand_heredoc_line(t_shell *shell, char *str)
 	{
 		if (str[i] == '$' && is_valid_dollar(str[i + 1]))
 			res = append_var_value(shell, res, str, &i, NORMAL);
+		else
+		{
+			res = ft_strjoin_char(res, str[i]);
+			i++;
+		}
+	}
+	free(str);
+	return (res);
+}
+*/
+
+static char	*expand_heredoc_line(t_shell *shell, char *str)
+{
+	char	*res;
+	int		i;
+
+	res = ft_strdup("");
+	if (!str || !res)
+		return (res);
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] == '$')
+		{
+			if (str[i + 1] == '?')
+				res = append_var_value(shell, res, str, &i, NORMAL);
+			else if (ft_isdigit(str[i + 1]))
+				i += 2;
+			else if (ft_isalpha(str[i + 1]) || str[i + 1] == '_')
+				res = append_var_value(shell, res, str, &i, NORMAL);
+			else
+			{
+				res = ft_strjoin_char(res, str[i]);
+				i++;
+			}
+		}
 		else
 		{
 			res = ft_strjoin_char(res, str[i]);
