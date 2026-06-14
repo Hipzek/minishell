@@ -1,4 +1,4 @@
-*This project has been created as part of the 42 curriculum by <login1> and <login2>.*
+*This project has been created as part of the 42 curriculum by hbekka and hbelleuv.*
 
 # Minishell
 
@@ -34,14 +34,14 @@ The shell provides an interactive prompt where users can execute commands, use p
 
 ### Requirements
 
-- GCC or Clang
-- GNU Make
+- CC
 - Readline library
 
 ### Compilation
 
 ```bash
 make
+make re
 ```
 
 ### Execution
@@ -55,7 +55,6 @@ make
 ```bash
 make clean
 make fclean
-make re
 ```
 
 ### Example Usage
