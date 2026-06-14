@@ -56,7 +56,7 @@ static void	print_error(char *str)
 
 static int	error_syntax(char *token_value)
 {
-	print_error("bash: syntax error near unexpected token '");
+	print_error("bash: syntax error near unexpected token `");
 	if (token_value)
 		print_error(token_value);
 	else
