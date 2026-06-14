@@ -221,6 +221,11 @@ void	exec_child(t_shell *shell, t_cmd *cmd, int relay_fd, int pipe_fd[2])
 	}
 	if (cmd->args == NULL || cmd->args[0] == NULL)
 		clean_and_exit(shell, 0);
+	if (cmd->args[0][0] == '\0')
+	{
+		ft_putstr_fd("minishell: : command not found\n", STDERR_FILENO);
+		clean_and_exit(shell, 127);
+	}
 	if (ft_strchr(cmd->args[0], '/') != NULL )
 	{
 		if (access(cmd->args[0], F_OK) == -1)
