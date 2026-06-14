@@ -34,6 +34,14 @@ On le gere directement dans la boucle principale
 
 #include "../includes/minishell.h"
 
+void	heredoc_sigint(int sig)
+{
+	(void)sig;
+	g_sig = SIGINT;
+	write(STDOUT_FILENO, "\n", 1);
+	rl_done = 1;
+}
+
 void	handle_signal(int sig)
 {
 	g_sig = sig;

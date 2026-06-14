@@ -176,6 +176,7 @@ void		setup_inter_signals(void);
 void		setup_exec_signals(void);
 void		setup_child_signal(void);
 void		handle_signal(int sig);
+void		heredoc_sigint(int sig);
 
 // ----------- LEXER + VALID_SYNTAX -------------
 

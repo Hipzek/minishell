@@ -152,11 +152,20 @@ int expand_flag, int write_fd)
 static void	heredoc_child(t_shell *shell, char *real_delim,
 int expand_flag, int fd[2], t_cmd *current_cmd)
 {
-	
+	struct sigaction	sa;
+
 	close(fd[0]);
 	g_sig = 0;
-	signal(SIGINT, handle_signal);
-	signal(SIGQUIT, SIG_IGN);
+	sa.sa_handler = heredoc_sigint;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = 0;
+	sigaction(SIGINT, &sa, NULL);
+	sa.sa_handler = SIG_IGN;
+	sigaction(SIGQUIT, &sa, NULL);
+	/*
+	signal(SIGINT, heredoc_sigint);
+	//signal(SIGQUIT, SIG_IGN);
+	*/
 	do_heredoc_loop(shell, real_delim, expand_flag, fd[1]);
 	free(real_delim);
 	free_shell(shell);
@@ -180,11 +189,12 @@ int fd[2], pid_t pid)
 	signal(SIGINT, SIG_IGN);
 	waitpid(pid, &status, 0);
 	setup_inter_signals();
-	if ((WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
-		|| (WIFEXITED(status) && WEXITSTATUS(status) == 130))
+	if ((WIFSIGNALED(status) && WTERMSIG(status) == SIGINT))
+		//|| (WIFEXITED(status) && WEXITSTATUS(status) == 130))
 	{
 		close(fd[0]);
 		shell->exit_code = 130;
+		//write(1, "\n", 1);
 		return (-1);
 	}
 	return (fd[0]);
