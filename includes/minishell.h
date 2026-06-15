@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 18:27:45 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/13 13:52:13 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/15 17:22:10 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,7 +129,8 @@ void		ft_putstr_fd(char *s, int fd);
 // EXPAND
 void		expand_tokens(t_shell *shell);
 int			is_valid_dollar(char c);
-char		*append_var_value(t_shell *shell, char *res, char *str, int *i, t_state state);
+char		*append_var_value(t_shell *shell, char *res,
+				char *str, int *i, t_state state);
 
 // REMOVE QUOTES
 char		*clean_token_value(char *str);
@@ -212,11 +213,11 @@ int			ft_redir_out(t_struct_lex *lex);
 int			ft_redir_in(t_struct_lex *lex);
 
 // OUTPUT TESTS
-void	ft_print_arr(char **arr) ;
-void	ft_print_ttype(t_token_type type) ;
-void	ft_print_token(t_token *token) ;
-void	ft_print_redir(t_redir *redir) ;
-void	ft_print_cmd(t_cmd *cmd) ;
-void	ft_print_shell(t_shell *shell, int mod);
+void		ft_print_arr(char **arr);
+void		ft_print_ttype(t_token_type type);
+void		ft_print_token(t_token *token);
+void		ft_print_redir(t_redir *redir);
+void		ft_print_cmd(t_cmd *cmd);
+void		ft_print_shell(t_shell *shell, int mod);
 
 #endif

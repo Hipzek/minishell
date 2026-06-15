@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/18 18:47:10 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/15 15:30:05 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/15 17:20:39 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,10 +174,12 @@ int	read_heredoc(t_shell *shell, char *delim_token, t_cmd *current_cmd)
 	printf("flag de l'expand heredoc = %i \n", expand_flag);
 	real_delim = clean_token_value(delim_token);
 	if (pipe(fd) == -1)
-		return (free(real_delim), close(shell->saved_stdin), close(shell->saved_stdout), -1);
+		return (free(real_delim), close(shell->saved_stdin),
+			close(shell->saved_stdout), -1);
 	pid = fork();
 	if (pid == -1)
-		return (close(shell->saved_stdin), close(shell->saved_stdout), close(fd[0]), close(fd[1]), free(real_delim), -1);
+		return (close(shell->saved_stdin), close(shell->saved_stdout),
+			close(fd[0]), close(fd[1]), free(real_delim), -1);
 	if (pid == 0)
 		heredoc_child(shell, real_delim, expand_flag, fd, current_cmd);
 	return (heredoc_parent(shell, real_delim, fd, pid));
