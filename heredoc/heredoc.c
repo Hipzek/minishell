@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/18 18:47:10 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/15 17:52:38 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/15 19:46:08 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -193,7 +193,6 @@ int	read_heredoc(t_shell *shell, char *delim_token, t_cmd *current_cmd)
 	int		expand_flag;
 
 	expand_flag = !has_quotes(delim_token);
-	printf("flag de l'expand heredoc = %i \n", expand_flag);
 	real_delim = clean_token_value(delim_token);
 	if (pipe(fd) == -1)
 		return (free(real_delim), close(shell->saved_stdin),
