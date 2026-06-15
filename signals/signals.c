@@ -39,7 +39,6 @@ void	heredoc_sigint(int sig)
 	(void)sig;
 	g_sig = SIGINT;
 	write(STDOUT_FILENO, "\n", 1);
-	rl_done = 1;
 }
 
 void	handle_signal(int sig)

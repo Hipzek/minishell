@@ -35,6 +35,7 @@ Vis a vis des guillemets :
 
 #include "../includes/minishell.h"
 
+/*
 #include <fcntl.h>
 
 void	debug_fds(const char *label)
@@ -53,36 +54,11 @@ void	debug_fds(const char *label)
 	}
 	ft_printf("\n");
 }
-
+*/
 /*
 Expand les $VAR d'env
 guillemets ignoriees
 */
-/*
-static char	*expand_heredoc_line(t_shell *shell, char *str)
-{
-	char	*res;
-	int		i;
-
-	res = ft_strdup("");
-	if (!str || !res)
-		return (res);
-	i = 0;
-	while (str[i])
-	{
-		if (str[i] == '$' && is_valid_dollar(str[i + 1]))
-			res = append_var_value(shell, res, str, &i, NORMAL);
-		else
-		{
-			res = ft_strjoin_char(res, str[i]);
-			i++;
-		}
-	}
-	free(str);
-	return (res);
-}
-*/
-
 static char	*expand_heredoc_line(t_shell *shell, char *str)
 {
 	char	*res;
@@ -152,30 +128,17 @@ int expand_flag, int write_fd)
 static void	heredoc_child(t_shell *shell, char *real_delim,
 int expand_flag, int fd[2], t_cmd *current_cmd)
 {
-	struct sigaction	sa;
-
 	close(fd[0]);
 	g_sig = 0;
-	sa.sa_handler = heredoc_sigint;
-	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = 0;
-	sigaction(SIGINT, &sa, NULL);
-	sa.sa_handler = SIG_IGN;
-	sigaction(SIGQUIT, &sa, NULL);
-	/*
 	signal(SIGINT, heredoc_sigint);
-	//signal(SIGQUIT, SIG_IGN);
-	*/
+	signal(SIGQUIT, SIG_IGN);
 	do_heredoc_loop(shell, real_delim, expand_flag, fd[1]);
 	free(real_delim);
 	free_shell(shell);
 	free_cmd_lst(current_cmd);
 	close(fd[1]);
 	if (g_sig == SIGINT)
-	{
-		write(STDOUT_FILENO, "\n", 1);
 		exit(130);
-	}
 	exit(0);
 }
 
@@ -209,6 +172,7 @@ int	read_heredoc(t_shell *shell, char *delim_token, t_cmd *current_cmd)
 	int		expand_flag;
 
 	expand_flag = !has_quotes(delim_token);
+	printf("flag de l'expand heredoc = %i \n", expand_flag);
 	real_delim = clean_token_value(delim_token);
 	if (pipe(fd) == -1)
 		return (free(real_delim), close(shell->saved_stdin), close(shell->saved_stdout), -1);
