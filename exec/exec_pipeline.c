@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/23 16:15:27 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/12 19:22:08 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/15 17:11:54 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,8 @@ int	exec_pipeline(t_shell *shell)
 	{
 		if (current->redir != NULL)
 		{
-			// TODO : A VERIFIER SI BESOIN DE DUP2 SI TRAITEMENT REDIRECTION ECHOUE
+			// TODO : A VERIFIER SI BESOIN DE DUP2 S_ISDIR
+			// TRAITEMENT REDIRECTION ECHOUE
 			if (apply_redir_parent(shell, current) != 0)
 			{
 				dup2(shell->saved_stdin, STDIN_FILENO);
@@ -126,11 +127,6 @@ int	exec_pipeline(t_shell *shell)
 		dup2(shell->saved_stdin, STDIN_FILENO);
 		dup2(shell->saved_stdout, STDOUT_FILENO);
 		close_heredoc_fds(current);
-//		printf("CURRENT CMD \n");
-//		ft_print_cmd(current);
-		// close(shell->saved_stdin);
-		// close(shell->saved_stdout);
-//		printf("INFD = %d || OUTFD = %d\n", shell->saved_stdin, shell->saved_stdout);
 		return (shell->exit_code);
 	}
 	while (current != NULL)
@@ -200,15 +196,13 @@ void	exec_child(t_shell *shell, t_cmd *cmd, int relay_fd, int pipe_fd[2])
 		dup2(relay_fd, STDIN_FILENO);
 		close(relay_fd);
 	}
-
 	// SI PAS LA DERNIERE COMMANDE
 	if (cmd->next != NULL)
 	{
 		close(pipe_fd[0]);
 		dup2(pipe_fd[1], STDOUT_FILENO);
 		close(pipe_fd[1]);
-	}	
-
+	}
 	// TRAITE TOUTE LA LISTE DE REDIRECTION
 	apply_redir(shell, cmd);
 	if (is_builtin(cmd))
@@ -217,7 +211,6 @@ void	exec_child(t_shell *shell, t_cmd *cmd, int relay_fd, int pipe_fd[2])
 //		printf("BEFORRRRRRRRRRRRRRRE\n");
 		clean_and_exit(shell, ret);
 //		printf("AFTERRRRRRRRRRRRRRRRR\n");
-
 	}
 	if (cmd->args == NULL || cmd->args[0] == NULL)
 		clean_and_exit(shell, 0);

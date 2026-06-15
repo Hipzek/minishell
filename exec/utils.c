@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/26 16:11:47 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/12 19:23:48 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/15 17:13:13 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -262,6 +262,7 @@ void	ft_print_shell(t_shell *shell, int mod) {
 			shell->token = shell->token->next;
 		}
 	}
-	printf("STDIN = [%d] || STDOUT = [%d]\n", shell->saved_stdin, shell->saved_stdout);
+	printf("STDIN = [%d] || STDOUT = [%d]\n", shell->saved_stdin,
+		shell->saved_stdout);
 	printf("EXIT CODE = [%d]\n", shell->exit_code);
 }*/
