@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/18 18:47:10 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/15 17:20:39 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/15 17:52:38 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,9 @@ Vis a vis des guillemets :
 
 /*
 #include <fcntl.h>
+#include <readline/readline.h>
+#include <signal.h>
+#include <unistd.h>
 
 void	debug_fds(const char *label)
 {
@@ -55,6 +58,15 @@ void	debug_fds(const char *label)
 	ft_printf("\n");
 }
 */
+
+static void	warn_eof(char *delim)
+{
+	ft_putstr_fd("minishell: warning: here-document delimited", STDERR_FILENO);
+	ft_putstr_fd("by end-of-file (wanted `", STDERR_FILENO);
+	ft_putstr_fd(delim, STDERR_FILENO);
+	ft_putstr_fd("`)", STDERR_FILENO);
+}
+
 /*
 Expand les $VAR d'env
 guillemets ignoriees
@@ -109,8 +121,8 @@ int expand_flag, int write_fd)
 		}
 		if (line == NULL)
 		{
-			printf("minishell: warning: here-document");
-			printf(" delimited by end-of-file (wanted `%s')\n", real_delim);
+			if (g_sig != SIGINT)
+				warn_eof(real_delim);
 			break ;
 		}
 		if (ft_strcmp(line, real_delim) == 0)
@@ -128,9 +140,14 @@ int expand_flag, int write_fd)
 static void	heredoc_child(t_shell *shell, char *real_delim,
 int expand_flag, int fd[2], t_cmd *current_cmd)
 {
+	struct sigaction	sa;
+
 	close(fd[0]);
 	g_sig = 0;
-	signal(SIGINT, heredoc_sigint);
+	sa.sa_handler = heredoc_sigint;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = 0;
+	sigaction(SIGINT, &sa, NULL);
 	signal(SIGQUIT, SIG_IGN);
 	do_heredoc_loop(shell, real_delim, expand_flag, fd[1]);
 	free(real_delim);
@@ -146,17 +163,22 @@ static int	heredoc_parent(t_shell *shell, char *real_delim,
 int fd[2], pid_t pid)
 {
 	int	status;
+	struct sigaction	old_sa;
 
 	close(fd[1]);
 	free(real_delim);
-	signal(SIGINT, SIG_IGN);
+	disable_sigint(&old_sa);
 	waitpid(pid, &status, 0);
+	restore_sigint(&old_sa);
 	setup_inter_signals();
 	if ((WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
 		|| (WIFEXITED(status) && WEXITSTATUS(status) == 130))
 	{
 		close(fd[0]);
 		shell->exit_code = 130;
+		rl_on_new_line();
+		rl_replace_line("", 0);
+		//rl_redisplay();
 		return (-1);
 	}
 	return (fd[0]);

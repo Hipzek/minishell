@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 20:09:50 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/05/13 18:59:59 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/15 17:38:48 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,11 +33,14 @@ On le gere directement dans la boucle principale
 */
 
 #include "../includes/minishell.h"
+#include <signal.h>
+#include <unistd.h>
 
 void	heredoc_sigint(int sig)
 {
 	(void)sig;
 	g_sig = SIGINT;
+	close(STDIN_FILENO);
 	write(STDOUT_FILENO, "\n", 1);
 }
 
@@ -85,4 +88,19 @@ void	setup_child_signal(void)
 	sa.sa_flags = 0;
 	sigaction(SIGINT, &sa, NULL);
 	sigaction(SIGQUIT, &sa, NULL);
+}
+
+void	disable_sigint(struct sigaction *old_sa)
+{
+	struct sigaction	sa_new;
+
+	sa_new.sa_handler = SIG_IGN;
+	sigemptyset(&sa_new.sa_mask);
+	sa_new.sa_flags = 0;
+	sigaction(SIGINT, &sa_new, old_sa);
+}
+
+void	restore_sigint(struct sigaction *old_sa)
+{
+	sigaction(SIGINT, old_sa, NULL);
 }

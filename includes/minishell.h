@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 18:27:45 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/15 17:22:10 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/15 17:50:22 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@
 extern volatile sig_atomic_t	g_sig;
 typedef struct s_redir			t_redir;
 typedef struct s_token			t_token;
+typedef struct sigaction		t_sa;
 
 typedef enum e_char_type
 {
@@ -178,6 +179,8 @@ void		setup_exec_signals(void);
 void		setup_child_signal(void);
 void		handle_signal(int sig);
 void		heredoc_sigint(int sig);
+void		disable_sigint(struct sigaction *old_sa);
+void		restore_sigint(struct sigaction *old_sa);
 
 // ----------- LEXER + VALID_SYNTAX -------------
 
