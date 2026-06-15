@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@learner.42.tech>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/15 21:55:49 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/05/27 23:39:09 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/15 15:16:08 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -252,6 +252,17 @@ void	expand_tokens(t_shell *shell)
 			// 2 si expand vide
 			if (new_val && *new_val == '\0' && !has_quotes(current->value))
 			{
+				if (prev != NULL && is_redirection(prev->token_type))
+				{
+					ft_putstr_fd("minishell: ", STDERR_FILENO);
+					ft_putstr_fd(current->value, STDERR_FILENO);
+					ft_putstr_fd(": ambiguous redirect\n", STDERR_FILENO);
+					free(new_val);
+					shell->exit_code = 1;
+					free_token_lst(shell->token);
+					shell->token = NULL;
+					return ;
+				}
 				free(new_val);
 				current = del_token_node(&shell->token, prev, current);
 				continue ;
