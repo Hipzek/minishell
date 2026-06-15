@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/18 18:47:10 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/12 19:23:07 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/15 15:30:05 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,12 +152,11 @@ int fd[2], pid_t pid)
 	signal(SIGINT, SIG_IGN);
 	waitpid(pid, &status, 0);
 	setup_inter_signals();
-	if ((WIFSIGNALED(status) && WTERMSIG(status) == SIGINT))
-		//|| (WIFEXITED(status) && WEXITSTATUS(status) == 130))
+	if ((WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
+		|| (WIFEXITED(status) && WEXITSTATUS(status) == 130))
 	{
 		close(fd[0]);
 		shell->exit_code = 130;
-		//write(1, "\n", 1);
 		return (-1);
 	}
 	return (fd[0]);
