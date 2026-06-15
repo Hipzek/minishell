@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/22 13:59:43 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/10 21:11:37 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/15 17:08:35 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ static int	fill_cmd_args(t_shell *shell, t_cmd *cmd, t_token **token)
 					return (-1);
 			}
 			if (add_redir(&(cmd->redir), (*token)->token_type,
-				(*token)->next->value, heredoc_fd) == -1)
+					(*token)->next->value, heredoc_fd) == -1)
 			{
 				if (heredoc_fd >= 0)
 					close(heredoc_fd);

@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/21 16:20:37 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/10 18:00:55 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/15 17:08:05 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,14 +53,14 @@ void	init_shell(t_shell *shell, char **env)
 	if (shell->saved_stdin == -1)
 	{
 		perror("dup");
-		return;
+		return ;
 	}
 	shell->saved_stdout = dup(STDOUT_FILENO);
 	if (shell->saved_stdout == -1)
 	{
 		close(shell->saved_stdin);
 		perror("dup");
-		return;
+		return ;
 	}
 }
 
