@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_table.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hbelleuv <hbelleuv@learner.42.tech>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/22 13:59:43 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/15 17:08:35 by hbelleuv         ###   ########.fr       */
+/*   Created: 2026/06/17 01:43:42 by hbelleuv          #+#    #+#             */
+/*   Updated: 2026/06/17 01:44:47 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,99 +39,7 @@ Cette etape sert donc a extraire tout ce qui est "tuyauterie" (pipes, redir)
 pour laisser les cmds parfaitements propres
 */
 
-static int	count_args(t_token *token)
-{
-	int	count;
-
-	count = 0;
-	while (token != NULL && token->token_type != PIPE)
-	{
-		if (is_redirection(token->token_type))
-			token = token->next->next;
-		else
-		{
-			count++;
-			token = token->next;
-		}
-	}
-	return (count);
-}
-
-static int	add_redir(t_redir **redir, t_token_type type,
-	char *file, int heredoc_fd)
-{
-	t_redir	*new_node;
-	t_redir	*last_node;
-
-	new_node = ft_calloc(1, sizeof(t_redir));
-	if (!new_node)
-	{
-		if (heredoc_fd >= 0)
-			close(heredoc_fd);
-		return (-1);
-	}
-	new_node->type = type;
-	new_node->file = ft_strdup(file);
-	if (!new_node->file)
-	{
-		if (heredoc_fd >= 0)
-			close(heredoc_fd);
-		free(new_node);
-		return (-1);
-	}
-	new_node->heredoc_fd = heredoc_fd;
-	if (*redir == NULL)
-		*redir = new_node;
-	else
-	{
-		last_node = *redir;
-		while (last_node->next != NULL)
-			last_node = last_node->next;
-		last_node->next = new_node;
-	}
-	return (0);
-}
-
-static int	fill_cmd_args(t_shell *shell, t_cmd *cmd, t_token **token)
-{
-	int	i;
-	int	heredoc_fd;
-
-	i = 0;
-	while (*token != NULL && (*token)->token_type != PIPE)
-	{
-		if (is_redirection((*token)->token_type))
-		{
-			heredoc_fd = -1;
-			if ((*token)->token_type == HEREDOC)
-			{
-				heredoc_fd = read_heredoc(shell, (*token)->next->value, cmd);
-				if (heredoc_fd == -1)
-					return (-1);
-			}
-			if (add_redir(&(cmd->redir), (*token)->token_type,
-					(*token)->next->value, heredoc_fd) == -1)
-			{
-				if (heredoc_fd >= 0)
-					close(heredoc_fd);
-				return (-1);
-			}
-			*token = (*token)->next->next;
-		}
-		else
-		{
-			cmd->args[i] = ft_strdup((*token)->value);
-			if (cmd->args[i] == NULL)
-				return (-1);
-			i++;
-			*token = (*token)->next;
-		}
-	}
-	cmd->args[i] = NULL;
-	return (0);
-}
-
-static t_cmd	*parse_cmd(t_shell *shell, t_token **token)
+t_cmd	*parse_cmd(t_shell *shell, t_token **token)
 {
 	t_cmd	*cmd;
 	int		argc;
@@ -139,7 +47,6 @@ static t_cmd	*parse_cmd(t_shell *shell, t_token **token)
 	cmd = ft_calloc(1, sizeof(t_cmd));
 	if (!cmd)
 		return (NULL);
-	//shell->cmd = cmd;
 	argc = count_args(*token);
 	cmd->args = ft_calloc(argc + 1, sizeof(char *));
 	if (!cmd->args)
@@ -155,6 +62,20 @@ static t_cmd	*parse_cmd(t_shell *shell, t_token **token)
 	if (*token != NULL && (*token)->token_type == PIPE)
 		*token = (*token)->next;
 	return (cmd);
+}
+
+static void	ft_add_cmd_to_list(t_cmd **head, t_cmd **tail, t_cmd *new_cmd)
+{
+	if (*head == NULL)
+	{
+		*head = new_cmd;
+		*tail = new_cmd;
+	}
+	else
+	{
+		(*tail)->next = new_cmd;
+		*tail = new_cmd;
+	}
 }
 
 t_cmd	*cmd_table(t_shell *shell)
@@ -175,16 +96,7 @@ t_cmd	*cmd_table(t_shell *shell)
 			free_cmd_lst(head);
 			return (NULL);
 		}
-		if (head == NULL)
-		{
-			head = new_cmd;
-			tail = new_cmd;
-		}
-		else
-		{
-			tail->next = new_cmd;
-			tail = new_cmd;
-		}
+		ft_add_cmd_to_list(&head, &tail, new_cmd);
 		shell->cmd = head;
 	}
 	return (head);
