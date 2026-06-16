@@ -4,6 +4,7 @@ CC = cc
 
 SRCS = main.c \
        lexer/do_lex_utils.c lexer/lex_utils.c lexer/t_list_utils.c \
+       lexer/lex_utils_bis.c lexer/lex.c lexer/t_list_utils_bis.c \
        parsing/valid_syntax.c \
        expand/expand.c \
        expand/remove_quotes.c \
