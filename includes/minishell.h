@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 18:27:45 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/15 17:50:22 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/17 01:48:56 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,6 +143,9 @@ int			read_heredoc(t_shell *shell, char *delim_token, t_cmd *current_cmd);
 
 // TABLE CMD
 t_cmd		*cmd_table(t_shell *shell);
+t_cmd		*parse_cmd(t_shell *shell, t_token **token);
+int		count_args(t_token *token);
+int		fill_cmd_args(t_shell *shell, t_cmd *cmd, t_token **token);
 
 // EXEC
 int			exec_pipeline(t_shell *shell);
