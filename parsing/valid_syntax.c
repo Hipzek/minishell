@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/22 11:20:16 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/05/13 18:58:22 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/17 01:24:57 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,8 +62,6 @@ static int	error_syntax(char *token_value)
 	else
 		print_error("newline");
 	print_error("'\n");
-	// TODO: Mettre a jour $? = 2
-	// TODO: Appeler garbage_collector() pour nettoyer la liste
 	return (1);
 }
 
@@ -78,7 +76,7 @@ int	valid_syntax(t_token *token)
 	t_token	*current;
 
 	if (!token)
-		return (error_syntax(NULL)); // A voir si je return pas juste NULL
+		return (error_syntax(NULL));
 	if (token->token_type == PIPE)
 		return (error_syntax(token->value));
 	current = token;
