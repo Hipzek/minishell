@@ -6,31 +6,9 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 20:09:50 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/15 17:38:48 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/17 21:55:00 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-/*
-D'après la norme C et POSIX, l'unique façon de partager un entier entre
-le programme principal et un gestionnaire de signaux asynchrone en toute sécurité
-est d'utiliser volatile sig_atomic_t
-
-Ce type garantit que la lecture et l'écriture de la variable 
-se font de manière atomique (en une seule instruction processeur)
-évitant les crashs si le signal arrive au mauvais moment
-
-La consigne demande de gérer Ctrl+C, Ctrl+D et Ctrl+\ :
-
-- Ctrl+C (SIGINT) et Ctrl+\ (SIGQUIT)
-sont de vrais signaux envoyés par le terminal
-
-- Ctrl+D est une condition de Fin de Fichier (EOF). Il ne génère aucun signal
-Lorsque l'utilisateur tape Ctrl+D, la fonction readline()
-renvoie simplement un pointeur NULL
-
-Il ne faut donc jamais tenter d'intercepter Ctrl+D avec sigaction
-On le gere directement dans la boucle principale
-*/
 
 #include "../includes/minishell.h"
 #include <signal.h>
@@ -40,7 +18,6 @@ void	heredoc_sigint(int sig)
 {
 	(void)sig;
 	g_sig = SIGINT;
-	close(STDIN_FILENO);
 	write(STDOUT_FILENO, "\n", 1);
 }
 

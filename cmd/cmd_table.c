@@ -6,38 +6,11 @@
 /*   By: hbelleuv <hbelleuv@learner.42.tech>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/17 01:43:42 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/17 01:44:47 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/17 21:55:00 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
-
-/*
-Point de depart, : ls -l > out | wc -l
-Donc la liste chainee est : [ls] -> [-l] -> [>] -> [out] -> [|] -> [wc] -> [-l]
-
-Lecture de gauche a droite
-
-Tri :
-Creation de la Commande 1
-ls (WORD) = Arg
--l (WORD) = Arg
-NB: les redir se lisent tjs par paires donc redir + mot juste apres
-> out (REDIR_OUT) = Redir
-| (PIPE) = Donc stop, fin de la Commande 1 
-
-Creation Commande 2
-| (PIPE) est jete a la poubelle car il a fait son travail de separation
-wc (WORD) = Arg
--l (WORD) = Arg
-
-FIN de la liste
-
-Par consequent de Bloc finale (cmd 1 et cmd 2)
-
-Cette etape sert donc a extraire tout ce qui est "tuyauterie" (pipes, redir)
-pour laisser les cmds parfaitements propres
-*/
 
 t_cmd	*parse_cmd(t_shell *shell, t_token **token)
 {
@@ -94,10 +67,11 @@ t_cmd	*cmd_table(t_shell *shell)
 		if (new_cmd == NULL)
 		{
 			free_cmd_lst(head);
+			shell->cmd = NULL;
 			return (NULL);
 		}
 		ft_add_cmd_to_list(&head, &tail, new_cmd);
-		shell->cmd = head;
 	}
+	shell->cmd = head;
 	return (head);
 }

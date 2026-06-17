@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 18:27:45 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/17 20:05:41 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/17 21:55:00 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,12 +118,6 @@ typedef struct s_heredoc
 	int			write_fd;
 }	t_heredoc;
 
-typedef struct s_pipe_fds
-{
-	int		fd[2];
-	pid_t	pid;
-}	t_pipe_fds;
-
 typedef struct s_shell
 {
 	char	**env;
@@ -146,16 +140,22 @@ int			ft_strcmp(const char *s1, const char *s2);
 int			ft_strncmp(const char *s1, const char *s2, size_t n);
 char		*ft_strdup(const char *s1);
 char		*ft_strjoin(char const *s1, char const *s2);
+char		*ft_strjoin_char(char *s1, char c);
 char		*ft_substr(char const *s, unsigned int start, size_t len);
 size_t		ft_strlen(const char *s);
 void		ft_putchar_fd(char c, int fd);
 void		ft_putstr_fd(char *s, int fd);
+void		ft_putendl_fd(char *s, int fd);
+char		*ft_itoa(int n);
 
 // EXPAND
 void		expand_tokens(t_shell *shell);
 int			is_valid_dollar(char c);
 void		ft_append_dollar_expansion(t_expand *curr_expand);
 void		ft_update_quote_state(char c, t_state *state);
+void		process_dollar_char(t_expand *exp);
+char		*process_expand(t_shell *shell, char *str);
+t_token		*del_token_node(t_token **head, t_token *prev, t_token *to_del);
 
 // REMOVE QUOTES
 char		*clean_token_value(char *str);

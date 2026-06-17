@@ -7,8 +7,10 @@ SRCS = main.c \
        lexer/lex_utils_bis.c lexer/lex.c lexer/t_list_utils_bis.c \
        parsing/valid_syntax.c \
        expand/expand.c \
-       expand/remove_quotes.c \
+       expand/expand_core.c \
        expand/expand_process.c \
+       expand/expand_utils.c \
+       expand/remove_quotes.c \
        cmd/cmd_table.c cmd/cmd_table_bis.c \
        heredoc/heredoc.c \
        heredoc/utils_heredoc.c \

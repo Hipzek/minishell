@@ -6,32 +6,9 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/18 18:47:10 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/17 20:06:29 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/17 21:55:00 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-/*
-HEREDOC :
-
-1. TOUS les Heredocs s'exécutent AVANT la moindre exécution de commande :
-exemple : si cat << A | grep "bonjour" << B
-Ne pas lancer de fork tout de suite
-d'abord afficher > pour le document A puis le doc B
-Et SEULEMENT ensuite lancer l'exec du pipeline
-
-2. Le token qui suit le << est le dilimiteur (EOF)
-Vis a vis des guillemets :
-- SI le delimiteur n'a pas de guillemets :
-  - il faut expand les $VAR a l'interieur du texte tape par l'utilisateur
-- SI le dilimiteur a des guillemets simple ou double :
-  - aucune expansion a faire
-
-3. Signaux (Comportement specifique durant le heredoc)
-- Ctrl + C : interrompt instantanement la lecture et la commande est annulee 
-($? = 130)
-- Ctrl + D : Pas un cas erreur ( == NULL , "EOF forcee")
-	     et garde le donc deja tapee
-*/
 
 #include "../includes/minishell.h"
 
@@ -40,30 +17,24 @@ static void	warn_eof(char *delim)
 	ft_putstr_fd("minishell: warning: here-document delimited", STDERR_FILENO);
 	ft_putstr_fd("by end-of-file (wanted `", STDERR_FILENO);
 	ft_putstr_fd(delim, STDERR_FILENO);
-	ft_putstr_fd("`)", STDERR_FILENO);
+	ft_putstr_fd("`)\n", STDERR_FILENO);
 }
 
-static void	hd_expand_init(t_expand *exp, t_shell *shell, char *str)
+static char	*hd_expand_init(t_expand *exp, t_shell *shell, char *str, char *res)
 {
 	exp->shell = shell;
-	exp->res = ft_strdup("");
+	exp->res = res;
 	exp->state = NORMAL;
 	exp->str = str;
 	exp->i = 0;
+	return (res);
 }
 
-/*
-Expand les $VAR d'env
-guillemets ignoriees
-*/
 static char	*hd_process_dollar(t_shell *shell, char *res, char *str, int *i)
 {
 	t_expand	exp;
-//	char		*tmp;
 
-//	tmp = res;
-	hd_expand_init(&exp, shell, str);
-	exp.res = res;
+	exp.res = hd_expand_init(&exp, shell, str, res);
 	exp.i = *i;
 	ft_append_dollar_expansion(&exp);
 	*i = exp.i;
@@ -77,7 +48,7 @@ static char	*expand_heredoc_line(t_shell *shell, char *str)
 
 	res = ft_strdup("");
 	if (!str || !res)
-		return (res);
+		return (free(str), res);
 	i = 0;
 	while (str[i])
 	{
@@ -93,7 +64,7 @@ static char	*expand_heredoc_line(t_shell *shell, char *str)
 	return (res);
 }
 
-static int	hd_should_stop(char *line, char *real_delim, t_heredoc *hd)
+static int	hd_should_stop(char *line, char *real_delim)
 {
 	if (g_sig == SIGINT || line == NULL)
 	{
@@ -107,7 +78,6 @@ static int	hd_should_stop(char *line, char *real_delim, t_heredoc *hd)
 		free(line);
 		return (1);
 	}
-	(void)hd;
 	return (0);
 }
 
@@ -118,7 +88,7 @@ void	do_heredoc_loop(t_heredoc *hd)
 	while (1)
 	{
 		line = readline("> ");
-		if (hd_should_stop(line, hd->real_delim, hd))
+		if (hd_should_stop(line, hd->real_delim))
 			break ;
 		if (hd->expand_flag)
 			line = expand_heredoc_line(hd->shell, line);
