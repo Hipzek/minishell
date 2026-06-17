@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 18:27:45 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/17 03:31:48 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/17 03:35:11 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,13 +141,13 @@ void		remove_quotes(t_shell *shell);
 int			has_quotes(char *str);
 int			read_heredoc(t_shell *shell, char *delim_token, t_cmd *current_cmd);
 void		do_heredoc_loop(t_shell *shell, char *real_delim,
-	int expand_flag, int write_fd);
+		int expand_flag, int write_fd);
 
 // TABLE CMD
 t_cmd		*cmd_table(t_shell *shell);
 t_cmd		*parse_cmd(t_shell *shell, t_token **token);
-int		count_args(t_token *token);
-int		fill_cmd_args(t_shell *shell, t_cmd *cmd, t_token **token);
+int			count_args(t_token *token);
+int			fill_cmd_args(t_shell *shell, t_cmd *cmd, t_token **token);
 
 // EXEC
 int			exec_pipeline(t_shell *shell);
@@ -173,7 +173,7 @@ int			update_env(t_shell *shell, char *name, char *value);
 int			is_valid_identifier(char *str);
 void		print_export_line(char *env_str);
 void		sort_env_ptrs(char **tab, int count);
-int		print_sorted_env(t_shell *shell);
+int			print_sorted_env(t_shell *shell);
 
 // GB
 void		free_double_tab(char **tab);
