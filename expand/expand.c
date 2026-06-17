@@ -42,27 +42,32 @@ reste un caractère $ littéral.
 
 #include "../includes/minishell.h"
 
+static char	*ft_handle_spaces(char *res, char *str, int *i)
+{
+	int	space_count;
+
+	space_count = 0;
+	while (str[*i] && (str[*i] == ' ' || str[*i] == '\t'))
+	{
+		space_count++;
+		(*i)++;
+	}
+	if (space_count > 0)
+		res = ft_strjoin_char(res, ' ');
+	return (res);
+}
+
 static char	*reduce_spaces(char *str)
 {
 	char	*res;
 	int		i;
-	int		space_count;
 
 	res = ft_strdup("");
 	i = 0;
 	while (str[i])
 	{
 		if (str[i] == ' ' || str[i] == '\t')
-		{
-			space_count = 0;
-			while (str[i] && (str[i] == ' ' || str[i] == '\t'))
-			{
-				space_count++;
-				i++;
-			}
-			if (space_count > 0)
-				res = ft_strjoin_char(res, ' ');
-		}
+			res = ft_handle_spaces(res, str, &i);
 		else
 		{
 			res = ft_strjoin_char(res, str[i]);
@@ -123,105 +128,14 @@ int	is_valid_dollar(char c)
 	return (1);
 }
 
-static char	*process_expand(t_shell *shell, char *str)
+void	ft_update_quote_state(char c, t_state *state)
 {
-	char	*res;
-	t_state	state;
-	int		i;
-
-	res = ft_strdup("");
-	state = NORMAL;
-	i = 0;
-	while (str[i])
-	{
-		if (str[i] == '\'' && state == NORMAL)
-			state = IN_SQUOTE;
-		else if (str[i] == '\'' && state == IN_SQUOTE)
-			state = NORMAL;
-		else if (str[i] == '"' && state == NORMAL)
-			state = IN_DQUOTE;
-		else if (str[i] == '"' && state == IN_DQUOTE)
-			state = NORMAL;
-
-		if (str[i] == '$' && state != IN_SQUOTE)
-		{
-			if (str[i + 1] == '\0' || str[i + 1] == ' ' || str[i + 1] == '\t')
-			{
-				res = ft_strjoin_char(res, str[i]);
-				i++;
-			}
-			else if ((str[i + 1] == '"' || str[i + 1] == '\'') && state == NORMAL)
-				i++;
-			else if (str[i + 1] == '?')
-				res = append_var_value(shell, res, str, &i, state);
-			else if (ft_isdigit(str[i + 1]))
-				i += 2;
-			else if (ft_isalpha(str[i + 1]) || str[i + 1] == '_')
-				res = append_var_value(shell, res, str, &i, state);
-			else
-			{
-				res = ft_strjoin_char(res, str[i]);
-				i++;
-			}
-		}
-		else
-		{
-			res = ft_strjoin_char(res, str[i]);
-			i++;
-		}
-	}
-	return (res);
-}
-
-t_token	*del_token_node(t_token **head, t_token *prev, t_token *to_del)
-{
-	t_token	*next_node;
-
-	next_node = to_del->next;
-	if (prev == NULL)
-		*head = next_node;
-	else
-		prev->next = next_node;
-	if (to_del->value)
-		free(to_del->value);
-	free(to_del);
-	return (next_node);
-}
-
-void	expand_tokens(t_shell *shell)
-{
-	t_token	*current;
-	t_token	*prev;
-	char	*new_val;
-
-	current = shell->token;
-	prev = NULL;
-	while (current != NULL)
-	{
-		if (current->token_type == WORD)
-		{
-			new_val = process_expand(shell, current->value);
-			if (new_val && *new_val == '\0' && !has_quotes(current->value))
-			{
-				if (prev != NULL && is_redirection(prev->token_type))
-				{
-					ft_putstr_fd("minishell: ", STDERR_FILENO);
-					ft_putstr_fd(current->value, STDERR_FILENO);
-					ft_putstr_fd(": ambiguous redirect\n", STDERR_FILENO);
-					free(new_val);
-					shell->exit_code = 1;
-					free_token_lst(shell->token);
-					shell->token = NULL;
-					return ;
-				}
-				free(new_val);
-				current = del_token_node(&shell->token, prev, current);
-				continue ;
-			}
-			free(current->value);
-			current->value = new_val;
-		}
-		prev = current;
-		current = current->next;
-	}
+	if (c == '\'' && *state == NORMAL)
+		*state = IN_SQUOTE;
+	else if (c == '\'' && *state == IN_SQUOTE)
+		*state = NORMAL;
+	else if (c == '"' && *state == NORMAL)
+		*state = IN_DQUOTE;
+	else if (c == '"' && *state == IN_DQUOTE)
+		*state = NORMAL;
 }

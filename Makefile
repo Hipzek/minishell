@@ -8,6 +8,7 @@ SRCS = main.c \
        parsing/valid_syntax.c \
        expand/expand.c \
        expand/remove_quotes.c \
+       expand/expand_process.c \
        cmd/cmd_table.c cmd/cmd_table_bis.c \
        heredoc/heredoc.c \
        heredoc/utils_heredoc.c \
