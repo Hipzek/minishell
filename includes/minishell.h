@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 18:27:45 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/17 02:57:58 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/17 03:31:48 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -223,13 +223,5 @@ int			ft_append(t_struct_lex *lex);
 int			ft_heredoc(t_struct_lex *lex);
 int			ft_redir_out(t_struct_lex *lex);
 int			ft_redir_in(t_struct_lex *lex);
-
-// OUTPUT TESTS
-void		ft_print_arr(char **arr);
-void		ft_print_ttype(t_token_type type);
-void		ft_print_token(t_token *token);
-void		ft_print_redir(t_redir *redir);
-void		ft_print_cmd(t_cmd *cmd);
-void		ft_print_shell(t_shell *shell, int mod);
 
 #endif

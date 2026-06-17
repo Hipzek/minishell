@@ -16,7 +16,7 @@ SRCS = main.c \
        builtin/ft_cd.c builtin/ft_echo.c builtin/ft_env.c \
        builtin/ft_exit.c builtin/ft_export.c builtin/ft_pwd.c \
        builtin/ft_unset.c builtin/utils.c builtin/ft_export_bis.c \
-       garbage_collector/garbage_collector.c
+       garbage_collector/free_shell.c garbage_collector/garbage_collector.c
 
 OBJS = $(SRCS:.c=.o)
 

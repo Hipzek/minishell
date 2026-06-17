@@ -78,37 +78,6 @@ void	free_token_lst(t_token *token)
 	}
 }
 
-void	free_shell(t_shell *shell)
-{
-	if (!shell)
-		return ;
-	if (shell->env != NULL)
-	{
-		free_double_tab(shell->env);
-		shell->env = NULL;
-	}
-	if (shell->token != NULL)
-	{
-		free_token_lst(shell->token);
-		shell->token = NULL;
-	}
-	if (shell->cmd != NULL)
-	{
-		free_cmd_lst(shell->cmd);
-		shell->cmd = NULL;
-	}
-	if (shell->saved_stdin != -1)
-	{
-		close(shell->saved_stdin);
-		shell->saved_stdin = -1;
-	}
-	if (shell->saved_stdout != -1)
-	{
-		close(shell->saved_stdout);
-		shell->saved_stdout = -1;
-	}
-}
-
 void	clean_and_exit(t_shell *shell, int exit_code)
 {
 	free_shell(shell);
