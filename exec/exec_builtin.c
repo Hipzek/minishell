@@ -12,6 +12,22 @@
 
 #include "../includes/minishell.h"
 
+void	close_heredoc_fds(t_cmd *cmd)
+{
+	t_redir	*redir;
+
+	redir = cmd->redir;
+	while (redir != NULL)
+	{
+		if (redir->type == HEREDOC && redir->heredoc_fd >= 0)
+		{
+			close(redir->heredoc_fd);
+			redir->heredoc_fd = -1;
+		}
+		redir = redir->next;
+	}
+}
+
 int	is_builtin(t_cmd *cmd)
 {
 	char	*name;

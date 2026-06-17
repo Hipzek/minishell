@@ -142,7 +142,7 @@ void		remove_quotes(t_shell *shell);
 int			has_quotes(char *str);
 int			read_heredoc(t_shell *shell, char *delim_token, t_cmd *current_cmd);
 void		do_heredoc_loop(t_shell *shell, char *real_delim,
-		int expand_flag, int write_fd);
+			int expand_flag, int write_fd);
 
 // TABLE CMD
 t_cmd		*cmd_table(t_shell *shell);
@@ -160,6 +160,7 @@ char		*path(char *cmd, char **envp);
 int			is_builtin(t_cmd *cmd);
 int			exec_builtin(t_shell *shell, t_cmd *cmd);
 void		wait_pipeline(t_shell *shell, pid_t last_pid);
+void		close_heredoc_fds(t_cmd *cmd);
 
 // BUILT IN
 int			ft_echo(t_shell *shell, t_cmd *cmd);

@@ -79,20 +79,82 @@ Astuce : pour cela capturer le statut PID du dernier
 
 #include "../includes/minishell.h"
 
-static void	close_heredoc_fds(t_cmd *cmd)
+static int	ft_exec_single_builtin(t_shell *shell, t_cmd *cmd)
 {
-	t_redir	*redir;
-
-	redir = cmd->redir;
-	while (redir != NULL)
+	if (cmd->redir != NULL)
 	{
-		if (redir->type == HEREDOC && redir->heredoc_fd >= 0)
+		if (apply_redir_parent(shell, cmd) != 0)
 		{
-			close(redir->heredoc_fd);
-			redir->heredoc_fd = -1;
+			dup2(shell->saved_stdin, STDIN_FILENO);
+			dup2(shell->saved_stdout, STDOUT_FILENO);
+			close_heredoc_fds(cmd);
+			return (1);
 		}
-		redir = redir->next;
 	}
+	shell->exit_code = exec_builtin(shell, cmd);
+	dup2(shell->saved_stdin, STDIN_FILENO);
+	dup2(shell->saved_stdout, STDOUT_FILENO);
+	close_heredoc_fds(cmd);
+	return (shell->exit_code);
+}
+
+static int	ft_create_pipe(t_cmd *current, int relay_fd, int pipe_fd[2])
+{
+	if (current->next != NULL)
+	{
+		if (pipe(pipe_fd) == -1)
+		{
+			perror("pipe");
+			if (relay_fd != -1)
+				close(relay_fd);
+			return (-1);
+		}
+	}
+	return (0);
+}
+
+static pid_t	ft_create_pipe_and_fork(t_cmd *current, int relay_fd,
+	int pipe_fd[2])
+{
+	pid_t	pid;
+
+	if (ft_create_pipe(current, relay_fd, pipe_fd) == -1)
+		return (-1);
+	pid = fork();
+	if (pid == -1)
+	{
+		perror("fork");
+		if (relay_fd != -1)
+			close(relay_fd);
+		if (current->next != NULL)
+		{
+			close(pipe_fd[0]);
+			close(pipe_fd[1]);
+		}
+	}
+	return (pid);
+}
+
+static int	ft_process_pipeline_cmd(t_shell *shell, t_cmd **current,
+	int *relay_fd, int pipe_fd[2])
+{
+	pid_t	pid;
+
+	pid = ft_create_pipe_and_fork(*current, *relay_fd, pipe_fd);
+	if (pid == -1)
+		return (-1);
+	if (pid == 0)
+		exec_child(shell, *current, *relay_fd, pipe_fd);
+	close_heredoc_fds(*current);
+	if ((*current)->next != NULL)
+	{
+		close(pipe_fd[1]);
+		if (*relay_fd != -1)
+			close(*relay_fd);
+		*relay_fd = pipe_fd[0];
+	}
+	*current = (*current)->next;
+	return (pid);
 }
 
 int	exec_pipeline(t_shell *shell)
@@ -102,144 +164,18 @@ int	exec_pipeline(t_shell *shell)
 	int		relay_fd;
 	pid_t	pid;
 
-	pipe_fd[0] = -1;
-	pipe_fd[1] = 1;
-	pid = -1;
 	relay_fd = -1;
 	current = shell->cmd;
 	if (current->next == NULL && is_builtin(current))
-	{
-		if (current->redir != NULL)
-		{
-			if (apply_redir_parent(shell, current) != 0)
-			{
-				dup2(shell->saved_stdin, STDIN_FILENO);
-				dup2(shell->saved_stdout, STDOUT_FILENO);
-				close_heredoc_fds(current);
-				return (1);
-			}
-		}
-		shell->exit_code = exec_builtin(shell, current);
-		dup2(shell->saved_stdin, STDIN_FILENO);
-		dup2(shell->saved_stdout, STDOUT_FILENO);
-		close_heredoc_fds(current);
-		return (shell->exit_code);
-	}
+		return (ft_exec_single_builtin(shell, current));
 	while (current != NULL)
 	{
-		if (current->next != NULL)
-		{
-			if (pipe(pipe_fd) == -1)
-			{
-				perror("pipe");
-				if (relay_fd != -1)
-					close(relay_fd);
-				return (1);
-			}
-		}
-		pid = fork();
+		pid = ft_process_pipeline_cmd(shell, &current, &relay_fd, pipe_fd);
 		if (pid == -1)
-		{
-			perror("fork");
-			if (relay_fd != -1)
-				close(relay_fd);
-			if (current->next != NULL)
-			{
-				close(pipe_fd[0]);
-				close(pipe_fd[1]);
-			}
 			return (1);
-		}
-		if (pid == 0)
-		{
-			exec_child(shell, current, relay_fd, pipe_fd);
-		}
-		close_heredoc_fds(current);
-		if (current->next != NULL)
-		{
-			close(pipe_fd[1]);
-			if (relay_fd != -1)
-				close(relay_fd);
-			relay_fd = pipe_fd[0];
-		}
-		current = current->next;
 	}
 	if (relay_fd != -1)
 		close(relay_fd);
 	wait_pipeline(shell, pid);
 	return (shell->exit_code);
-}
-
-/*
-Revoir stat :
-...
-*/
-void	exec_child(t_shell *shell, t_cmd *cmd, int relay_fd, int pipe_fd[2])
-{
-	int			ret;
-	struct stat	path_stat;
-
-	setup_child_signal();
-	if (relay_fd != -1)
-	{
-		dup2(relay_fd, STDIN_FILENO);
-		close(relay_fd);
-	}
-	if (cmd->next != NULL)
-	{
-		close(pipe_fd[0]);
-		dup2(pipe_fd[1], STDOUT_FILENO);
-		close(pipe_fd[1]);
-	}
-	apply_redir(shell, cmd);
-	if (is_builtin(cmd))
-	{
-		ret = exec_builtin(shell, cmd);
-		clean_and_exit(shell, ret);
-	}
-	if (cmd->args == NULL || cmd->args[0] == NULL)
-		clean_and_exit(shell, 0);
-	if (cmd->args[0][0] == '\0')
-	{
-		ft_putstr_fd("minishell: : command not found\n", STDERR_FILENO);
-		clean_and_exit(shell, 127);
-	}
-	if (ft_strchr(cmd->args[0], '/') != NULL )
-	{
-		if (access(cmd->args[0], F_OK) == -1)
-		{
-			ft_putstr_fd("minishell: ", STDERR_FILENO);
-			ft_putstr_fd(cmd->args[0], STDERR_FILENO);
-			ft_putstr_fd(": No such file or directory\n", STDERR_FILENO);
-			clean_and_exit(shell, 127);
-		}
-		if (stat(cmd->args[0], &path_stat) == 0 && S_ISDIR(path_stat.st_mode))
-		{
-			ft_putstr_fd("minishell: ", STDERR_FILENO);
-			ft_putstr_fd(cmd->args[0], STDERR_FILENO);
-			ft_putstr_fd(": Is a directory\n", STDERR_FILENO);
-			clean_and_exit(shell, 126);
-		}
-		if (access(cmd->args[0], X_OK) == -1)
-		{
-			ft_putstr_fd("minishell: ", STDERR_FILENO);
-			ft_putstr_fd(cmd->args[0], STDERR_FILENO);
-			ft_putstr_fd(": Permission denied\n", STDERR_FILENO);
-			clean_and_exit(shell, 126);
-		}
-		cmd->path = ft_strdup(cmd->args[0]);
-	}
-	else
-	{
-		cmd->path = path(cmd->args[0], shell->env);
-		if (cmd->path == NULL)
-		{
-			ft_putstr_fd(cmd->args[0], STDERR_FILENO);
-			ft_putstr_fd(": command not found\n", STDERR_FILENO);
-			clean_and_exit(shell, 127);
-		}
-	}
-	execve(cmd->path, cmd->args, shell->env);
-	perror(cmd->args[0]);
-	clean_and_exit(shell, 126);
 }
