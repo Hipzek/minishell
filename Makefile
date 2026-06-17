@@ -13,7 +13,8 @@ SRCS = main.c \
        heredoc/heredoc.c \
        heredoc/utils_heredoc.c \
        signals/signals.c signals/signals_exec.c \
-       exec/exec_pipeline.c exec/path.c exec/utils.c \
+       exec/exec_pipeline.c exec/path.c exec/redir.c \
+       exec/exec_builtin.c exec/apply_redir_parent.c \
        builtin/ft_cd.c builtin/ft_echo.c builtin/ft_env.c \
        builtin/ft_exit.c builtin/ft_export.c builtin/ft_pwd.c \
        builtin/ft_unset.c builtin/utils.c builtin/ft_export_bis.c \
