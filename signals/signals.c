@@ -68,28 +68,6 @@ void	setup_inter_signals(void)
 	sigaction(SIGQUIT, &sa_quit, NULL);
 }
 
-void	setup_exec_signals(void)
-{
-	struct sigaction	sa;
-
-	sa.sa_handler = SIG_IGN;
-	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = 0;
-	sigaction(SIGINT, &sa, NULL);
-	sigaction(SIGQUIT, &sa, NULL);
-}
-
-void	setup_child_signal(void)
-{
-	struct sigaction	sa;
-
-	sa.sa_handler = SIG_DFL;
-	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = 0;
-	sigaction(SIGINT, &sa, NULL);
-	sigaction(SIGQUIT, &sa, NULL);
-}
-
 void	disable_sigint(struct sigaction *old_sa)
 {
 	struct sigaction	sa_new;

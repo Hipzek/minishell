@@ -11,7 +11,7 @@ SRCS = main.c \
        cmd/cmd_table.c cmd/cmd_table_bis.c \
        heredoc/heredoc.c \
        heredoc/utils_heredoc.c \
-       signals/signals.c \
+       signals/signals.c signals/signals_exec.c \
        exec/exec_pipeline.c exec/path.c exec/utils.c \
        builtin/ft_cd.c builtin/ft_echo.c builtin/ft_env.c \
        builtin/ft_exit.c builtin/ft_export.c builtin/ft_pwd.c \
