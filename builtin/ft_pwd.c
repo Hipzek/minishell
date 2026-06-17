@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 14:35:02 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/05/11 22:38:50 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/17 03:01:17 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ int	ft_pwd(t_shell *shell, t_cmd *cmd)
 		ft_putstr_fd("pwd: ", STDERR_FILENO);
 		ft_putstr_fd(cmd->args[1], STDERR_FILENO);
 		ft_putstr_fd(": invalid option\n", STDERR_FILENO);
-		return (2); // a voir si il faut pas renvoyer 1 plutot ???
+		return (2);
 	}
 	cwd = getcwd(NULL, 0);
 	if (cwd != NULL)

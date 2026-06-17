@@ -41,6 +41,18 @@ int	is_numeric(char *str)
 	return (0);
 }
 
+static void	ft_parse_sign(char *str, int *i, int *sign)
+{
+	while ((str[*i] >= 9 && str[*i] <= 13) || str[*i] == 32)
+		(*i)++;
+	if (str[*i] == '+' || str[*i] == '-')
+	{
+		if (str[*i] == '-')
+			*sign = -1;
+		(*i)++;
+	}
+}
+
 long long	ft_atoll(char *str, int *error)
 {
 	unsigned long long	res;
@@ -50,14 +62,7 @@ long long	ft_atoll(char *str, int *error)
 	res = 0;
 	sign = 1;
 	i = 0;
-	while ((str[i] >= 9 && str[i] <= 13) || str[i] == 32)
-		i++;
-	if (str[i] == '+' || str[i] == '-')
-	{
-		if (str[i] == '-')
-			sign = -1;
-		i++;
-	}
+	ft_parse_sign(str, &i, &sign);
 	while (str[i] >= '0' && str[i] <= '9')
 	{
 		res = res * 10 + (str[i] - '0');

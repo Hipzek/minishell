@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 18:27:45 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/17 01:48:56 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/17 02:57:58 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,6 +170,10 @@ int			ft_unset(t_shell *shell, t_cmd *cmd);
 int			ft_exit(t_shell *shell, t_cmd *cmd);
 char		*get_env(t_shell *shell, char *name);
 int			update_env(t_shell *shell, char *name, char *value);
+int			is_valid_identifier(char *str);
+void		print_export_line(char *env_str);
+void		sort_env_ptrs(char **tab, int count);
+int		print_sorted_env(t_shell *shell);
 
 // GB
 void		free_double_tab(char **tab);

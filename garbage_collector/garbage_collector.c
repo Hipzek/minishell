@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 21:58:05 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/10 18:49:43 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/17 03:23:47 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,11 +92,6 @@ void	free_shell(t_shell *shell)
 		free_token_lst(shell->token);
 		shell->token = NULL;
 	}
-	// if (shell->cmd->args != NULL)
-	// {
-	// 	free(shell->cmd->args);
-	// 	shell->cmd->args = NULL;
-	// }
 	if (shell->cmd != NULL)
 	{
 		free_cmd_lst(shell->cmd);
@@ -116,18 +111,6 @@ void	free_shell(t_shell *shell)
 
 void	clean_and_exit(t_shell *shell, int exit_code)
 {
-	/*
-	if (shell->saved_stdin > 2)
-	{
-		close(shell->saved_stdin);
-		shell->saved_stdin = -1;
-	}
-	if (shell->saved_stdout > 2)
-	{
-		close(shell->saved_stdout);
-		shell->saved_stdout = -1;
-	}
-	*/
 	free_shell(shell);
 	rl_clear_history();
 	exit(exit_code);

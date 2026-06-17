@@ -40,11 +40,29 @@ static int	is_valid_unset_id(char *str)
 	return (0);
 }
 
+static int	ft_remove_env_var(t_shell *shell, char *var_name)
+{
+	int	len;
+	int	j;
+
+	len = ft_strlen(var_name);
+	j = 0;
+	while (shell->env[j] != NULL)
+	{
+		if (ft_strncmp(shell->env[j], var_name, len) == 0
+			&& shell->env[j][len] == '=')
+		{
+			rm_env_var(shell, j);
+			break ;
+		}
+		j++;
+	}
+	return (0);
+}
+
 int	ft_unset(t_shell *shell, t_cmd *cmd)
 {
 	int	i;
-	int	j;
-	int	len;
 	int	exit_status;
 
 	if (!shell || !shell->env || !cmd->args)
@@ -61,20 +79,7 @@ int	ft_unset(t_shell *shell, t_cmd *cmd)
 			exit_status = 1;
 		}
 		else
-		{
-			len = ft_strlen(cmd->args[i]);
-			j = 0;
-			while (shell->env[j] != NULL)
-			{
-				if (ft_strncmp(shell->env[j], cmd->args[i], len) == 0
-					&& shell->env[j][len] == '=')
-				{
-					rm_env_var(shell, j);
-					break ;
-				}
-				j++;
-			}
-		}
+			ft_remove_env_var(shell, cmd->args[i]);
 		i++;
 	}
 	return (exit_status);

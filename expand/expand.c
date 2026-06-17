@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@learner.42.tech>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/15 21:55:49 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/15 15:16:08 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/17 03:22:52 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,8 +81,7 @@ char	*append_var_value(t_shell *shell, char *res, char *str, int *i, t_state sta
 	char	*tmp;
 
 	tmp = res;
-	(*i)++; // saute le $
-	// cas 1 : $?
+	(*i)++;
 	if (str[*i] == '?')
 	{
 		var_value = ft_itoa(shell->exit_code);
@@ -92,7 +91,6 @@ char	*append_var_value(t_shell *shell, char *res, char *str, int *i, t_state sta
 		(*i)++;
 		return (res);
 	}
-	// cas 2 : variable env classique
 	start = *i;
 	while (str[*i] && (ft_isalnum(str[*i]) || str[*i] == '_'))
 		(*i)++;
@@ -101,7 +99,6 @@ char	*append_var_value(t_shell *shell, char *res, char *str, int *i, t_state sta
 	free(var_name);
 	if (var_value != NULL)
 	{
-		// En mode NORMAL (non-quoted), réduire les espaces multiples
 		if (state == NORMAL)
 		{
 			processed_value = reduce_spaces(var_value);
@@ -119,48 +116,12 @@ char	*append_var_value(t_shell *shell, char *res, char *str, int *i, t_state sta
 
 int	is_valid_dollar(char c)
 {
-	// si fin de chaine, espace ou tabulation
 	if (c == '\0' || c == ' ' || c == '\t')
 		return (0);
-	// si le char est squote ou dquote
 	if (c == '"' || c == '\'')
 		return (0);
 	return (1);
 }
-
-/*
-static char	*process_expand(t_shell *shell, char *str)
-{
-	char	*res;
-	t_state	state;
-	int		i;
-
-	res = ft_strdup("");
-	state = NORMAL;
-	i = 0;
-	while (str[i])
-	{
-		if (str[i] == '\'' && state == NORMAL)
-			state = IN_SQUOTE;
-		else if (str[i] == '\'' && state == IN_SQUOTE)
-			state = NORMAL;
-		else if (str[i] == '"' && state == NORMAL)
-			state = IN_DQUOTE;
-		else if (str[i] == '"' && state == IN_DQUOTE)
-			state = NORMAL;
-		if (str[i] == '$' && state != IN_SQUOTE && is_valid_dollar(str[i + 1]))
-		{
-			res = append_var_value(shell, res, str, &i, state);
-		}
-		else
-		{
-			res = ft_strjoin_char(res, str[i]);
-			i++;
-		}
-	}
-	return (res);
-}
-*/
 
 static char	*process_expand(t_shell *shell, char *str)
 {
@@ -190,21 +151,13 @@ static char	*process_expand(t_shell *shell, char *str)
 				i++;
 			}
 			else if ((str[i + 1] == '"' || str[i + 1] == '\'') && state == NORMAL)
-			{
-				i++; /* skip the $, let quote logic handle the rest */
-			}
+				i++;
 			else if (str[i + 1] == '?')
-			{
 				res = append_var_value(shell, res, str, &i, state);
-			}
 			else if (ft_isdigit(str[i + 1]))
-			{
-				i += 2; /* $digit -> empty, keep rest literal */
-			}
+				i += 2;
 			else if (ft_isalpha(str[i + 1]) || str[i + 1] == '_')
-			{
 				res = append_var_value(shell, res, str, &i, state);
-			}
 			else
 			{
 				res = ft_strjoin_char(res, str[i]);
@@ -247,9 +200,7 @@ void	expand_tokens(t_shell *shell)
 	{
 		if (current->token_type == WORD)
 		{
-			// 1 creation nouvelle chaine
 			new_val = process_expand(shell, current->value);
-			// 2 si expand vide
 			if (new_val && *new_val == '\0' && !has_quotes(current->value))
 			{
 				if (prev != NULL && is_redirection(prev->token_type))

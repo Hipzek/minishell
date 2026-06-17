@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/23 16:15:27 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/15 17:11:54 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/17 03:20:56 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,8 +95,6 @@ static void	close_heredoc_fds(t_cmd *cmd)
 	}
 }
 
-// TODO : SI UNE SEULE FONCTION -> DANS PROCESS PARENT
-
 int	exec_pipeline(t_shell *shell)
 {
 	t_cmd	*current;
@@ -113,8 +111,6 @@ int	exec_pipeline(t_shell *shell)
 	{
 		if (current->redir != NULL)
 		{
-			// TODO : A VERIFIER SI BESOIN DE DUP2 S_ISDIR
-			// TRAITEMENT REDIRECTION ECHOUE
 			if (apply_redir_parent(shell, current) != 0)
 			{
 				dup2(shell->saved_stdin, STDIN_FILENO);
@@ -131,7 +127,6 @@ int	exec_pipeline(t_shell *shell)
 	}
 	while (current != NULL)
 	{
-		// POURQUOI PAS DE REGLE SI C'EST PAS LE DERNIER
 		if (current->next != NULL)
 		{
 			if (pipe(pipe_fd) == -1)
@@ -184,33 +179,23 @@ void	exec_child(t_shell *shell, t_cmd *cmd, int relay_fd, int pipe_fd[2])
 	int			ret;
 	struct stat	path_stat;
 
-	//close(shell->saved_stdin);
-	//close(shell->saved_stdout);
-//	printf("%d\n", getpid());
 	setup_child_signal();
-	// printf("IN CHILD\n");
-	// printf("PIPE[0] = %d || PIPE[1] = %d\n", pipe_fd[0], pipe_fd[1]);
-	// RELAY FD SERT A RIEN PARCE QUE TOUJOURS A -1, AUCUN SET AVANT
 	if (relay_fd != -1)
 	{
 		dup2(relay_fd, STDIN_FILENO);
 		close(relay_fd);
 	}
-	// SI PAS LA DERNIERE COMMANDE
 	if (cmd->next != NULL)
 	{
 		close(pipe_fd[0]);
 		dup2(pipe_fd[1], STDOUT_FILENO);
 		close(pipe_fd[1]);
 	}
-	// TRAITE TOUTE LA LISTE DE REDIRECTION
 	apply_redir(shell, cmd);
 	if (is_builtin(cmd))
 	{
 		ret = exec_builtin(shell, cmd);
-//		printf("BEFORRRRRRRRRRRRRRRE\n");
 		clean_and_exit(shell, ret);
-//		printf("AFTERRRRRRRRRRRRRRRRR\n");
 	}
 	if (cmd->args == NULL || cmd->args[0] == NULL)
 		clean_and_exit(shell, 0);
@@ -254,7 +239,6 @@ void	exec_child(t_shell *shell, t_cmd *cmd, int relay_fd, int pipe_fd[2])
 			clean_and_exit(shell, 127);
 		}
 	}
-	// ft_print_cmd(cmd);
 	execve(cmd->path, cmd->args, shell->env);
 	perror(cmd->args[0]);
 	clean_and_exit(shell, 126);
