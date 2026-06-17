@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/18 18:47:10 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/17 02:28:27 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/17 20:06:29 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,30 +35,6 @@ Vis a vis des guillemets :
 
 #include "../includes/minishell.h"
 
-/*
-#include <fcntl.h>
-#include <readline/readline.h>
-#include <signal.h>
-#include <unistd.h>
-
-void	debug_fds(const char *label)
-{
-	int	i;
-	int	flags;
-
-	ft_printf("[%s] PID=%d open fds: ", label, getpid());
-	i = 0;
-	while (i < 20)
-	{
-		flags = fcntl(i, F_GETFD);
-		if (flags != -1)
-			ft_printf("%d ", i);
-		i++;
-	}
-	ft_printf("\n");
-}
-*/
-
 static void	warn_eof(char *delim)
 {
 	ft_putstr_fd("minishell: warning: here-document delimited", STDERR_FILENO);
@@ -67,24 +43,31 @@ static void	warn_eof(char *delim)
 	ft_putstr_fd("`)", STDERR_FILENO);
 }
 
+static void	hd_expand_init(t_expand *exp, t_shell *shell, char *str)
+{
+	exp->shell = shell;
+	exp->res = ft_strdup("");
+	exp->state = NORMAL;
+	exp->str = str;
+	exp->i = 0;
+}
+
 /*
 Expand les $VAR d'env
 guillemets ignoriees
 */
-static char	*ft_process_dollar(t_shell *shell, char *res, char *str, int *i)
+static char	*hd_process_dollar(t_shell *shell, char *res, char *str, int *i)
 {
-	if (str[*i + 1] == '?')
-		res = append_var_value(shell, res, str, i, NORMAL);
-	else if (ft_isdigit(str[*i + 1]))
-		*i += 2;
-	else if (ft_isalpha(str[*i + 1]) || str[*i + 1] == '_')
-		res = append_var_value(shell, res, str, i, NORMAL);
-	else
-	{
-		res = ft_strjoin_char(res, str[*i]);
-		(*i)++;
-	}
-	return (res);
+	t_expand	exp;
+//	char		*tmp;
+
+//	tmp = res;
+	hd_expand_init(&exp, shell, str);
+	exp.res = res;
+	exp.i = *i;
+	ft_append_dollar_expansion(&exp);
+	*i = exp.i;
+	return (exp.res);
 }
 
 static char	*expand_heredoc_line(t_shell *shell, char *str)
@@ -99,7 +82,7 @@ static char	*expand_heredoc_line(t_shell *shell, char *str)
 	while (str[i])
 	{
 		if (str[i] == '$')
-			res = ft_process_dollar(shell, res, str, &i);
+			res = hd_process_dollar(shell, res, str, &i);
 		else
 		{
 			res = ft_strjoin_char(res, str[i]);
@@ -110,29 +93,36 @@ static char	*expand_heredoc_line(t_shell *shell, char *str)
 	return (res);
 }
 
-void	do_heredoc_loop(t_shell *shell, char *real_delim,
-	int expand_flag, int write_fd)
+static int	hd_should_stop(char *line, char *real_delim, t_heredoc *hd)
+{
+	if (g_sig == SIGINT || line == NULL)
+	{
+		if (line == NULL && g_sig != SIGINT)
+			warn_eof(real_delim);
+		free(line);
+		return (1);
+	}
+	if (ft_strcmp(line, real_delim) == 0)
+	{
+		free(line);
+		return (1);
+	}
+	(void)hd;
+	return (0);
+}
+
+void	do_heredoc_loop(t_heredoc *hd)
 {
 	char	*line;
 
 	while (1)
 	{
 		line = readline("> ");
-		if (g_sig == SIGINT || line == NULL)
-		{
-			if (line == NULL && g_sig != SIGINT)
-				warn_eof(real_delim);
-			free(line);
+		if (hd_should_stop(line, hd->real_delim, hd))
 			break ;
-		}
-		if (ft_strcmp(line, real_delim) == 0)
-		{
-			free(line);
-			break ;
-		}
-		if (expand_flag)
-			line = expand_heredoc_line(shell, line);
-		ft_putendl_fd(line, write_fd);
+		if (hd->expand_flag)
+			line = expand_heredoc_line(hd->shell, line);
+		ft_putendl_fd(line, hd->write_fd);
 		free(line);
 	}
 }

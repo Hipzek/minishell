@@ -3,63 +3,72 @@
 /*                                                        :::      ::::::::   */
 /*   expand_process.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hbelleuv <hbelleuv@learner.42.tech>        +#+  +:+       +#+        */
+/*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/17 04:13:41 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/17 05:06:44 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/17 20:03:57 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-static char	*ft_process_dollar_char(t_shell *shell, char *res,
-	char *str, int *i)
+static void	process_dollar_special(t_expand *exp, char next)
 {
-	t_state	state;
-
-	state = *(t_state *)(str + 256);
-	if (str[*i + 1] == '\0' || str[*i + 1] == ' ' || str[*i + 1] == '\t')
+	if (next == '\0' || next == ' ' || next == '\t')
 	{
-		res = ft_strjoin_char(res, str[*i]);
-		(*i)++;
+		exp->res = ft_strjoin_char(exp->res, exp->str[exp->i]);
+		exp->i++;
 	}
-	else if ((str[*i + 1] == '"' || str[*i + 1] == '\'') && state == NORMAL)
-		(*i)++;
-	else if (str[*i + 1] == '?')
-		res = append_var_value(shell, res, str, i, state);
-	else if (ft_isdigit(str[*i + 1]))
-		*i += 2;
-	else if (ft_isalpha(str[*i + 1]) || str[*i + 1] == '_')
-		res = append_var_value(shell, res, str, i, state);
+	else if ((next == '"' || next == '\'') && exp->state == NORMAL)
+		exp->i++;
+	else if (next == '?' || ft_isalpha(next) || next == '_')
+		ft_append_dollar_expansion(exp);
+	else if (ft_isdigit(next))
+		exp->i += 2;
 	else
 	{
-		res = ft_strjoin_char(res, str[*i]);
-		(*i)++;
+		exp->res = ft_strjoin_char(exp->res, exp->str[exp->i]);
+		exp->i++;
 	}
-	return (res);
+}
+
+static void	process_dollar_char(t_expand *exp)
+{
+	char	next;
+
+	next = exp->str[exp->i + 1];
+	process_dollar_special(exp, next);
+}
+
+static void	expand_init(t_expand *exp, t_shell *shell, char *str)
+{
+	exp->shell = shell;
+	exp->res = ft_strdup("");
+	exp->state = NORMAL;
+	exp->str = str;
+	exp->i = 0;
+}
+
+static void	process_char(t_expand *exp)
+{
+	ft_update_quote_state(exp->str[exp->i], &exp->state);
+	if (exp->str[exp->i] == '$' && exp->state != IN_SQUOTE)
+		process_dollar_char(exp);
+	else
+	{
+		exp->res = ft_strjoin_char(exp->res, exp->str[exp->i]);
+		exp->i++;
+	}
 }
 
 static char	*process_expand(t_shell *shell, char *str)
 {
-	char	*res;
-	t_state	state;
-	int		i;
+	t_expand	exp;
 
-	res = ft_strdup("");
-	state = NORMAL;
-	i = 0;
-	while (str[i])
-	{
-		ft_update_quote_state(str[i], &state);
-		if (str[i] == '$' && state != IN_SQUOTE)
-			res = ft_process_dollar_char(shell, res, str, &i);
-		else
-		{
-			res = ft_strjoin_char(res, str[i]);
-			i++;
-		}
-	}
-	return (res);
+	expand_init(&exp, shell, str);
+	while (exp.str[exp.i])
+		process_char(&exp);
+	return (exp.res);
 }
 
 t_token	*del_token_node(t_token **head, t_token *prev, t_token *to_del)
@@ -77,17 +86,23 @@ t_token	*del_token_node(t_token **head, t_token *prev, t_token *to_del)
 	return (next_node);
 }
 
+static void	ambiguous_redirect(t_shell *shell, t_token **token,
+	t_token *current)
+{
+	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	ft_putstr_fd(current->value, STDERR_FILENO);
+	ft_putstr_fd(": ambiguous redirect\n", STDERR_FILENO);
+	shell->exit_code = 1;
+	free_token_lst(*token);
+	*token = NULL;
+}
+
 static void	ft_handle_empty_expansion(t_shell *shell, t_token **token,
 	t_token *prev, t_token **current)
 {
 	if (prev != NULL && is_redirection(prev->token_type))
 	{
-		ft_putstr_fd("minishell: ", STDERR_FILENO);
-		ft_putstr_fd((*current)->value, STDERR_FILENO);
-		ft_putstr_fd(": ambiguous redirect\n", STDERR_FILENO);
-		shell->exit_code = 1;
-		free_token_lst(*token);
-		*token = NULL;
+		ambiguous_redirect(shell, token, *current);
 		return ;
 	}
 	*current = del_token_node(token, prev, *current);

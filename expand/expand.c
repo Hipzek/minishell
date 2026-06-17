@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expand.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hbelleuv <hbelleuv@learner.42.tech>        +#+  +:+       +#+        */
+/*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/15 21:55:49 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/17 03:22:52 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/17 19:46:28 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,46 +77,58 @@ static char	*reduce_spaces(char *str)
 	return (res);
 }
 
-char	*append_var_value(t_shell *shell, char *res, char *str, int *i, t_state state)
+static void	expand_exit_code(t_expand *exp)
+{
+	char	*var_value;
+	char	*tmp;
+
+	tmp = exp->res;
+	var_value = ft_itoa(exp->shell->exit_code);
+	exp->res = ft_strjoin(tmp, var_value);
+	free(var_value);
+	free(tmp);
+	exp->i++;
+}
+
+static void	expand_normal_var(t_expand *exp)
 {
 	char	*var_name;
 	char	*var_value;
 	char	*processed_value;
-	int		start;
 	char	*tmp;
+	int		start;
 
-	tmp = res;
-	(*i)++;
-	if (str[*i] == '?')
-	{
-		var_value = ft_itoa(shell->exit_code);
-		res = ft_strjoin(tmp, var_value);
-		free(var_value);
-		free(tmp);
-		(*i)++;
-		return (res);
-	}
-	start = *i;
-	while (str[*i] && (ft_isalnum(str[*i]) || str[*i] == '_'))
-		(*i)++;
-	var_name = ft_substr(str, start, *i - start);
-	var_value = get_env(shell, var_name);
+	tmp = exp->res;
+	start = exp->i;
+	while (exp->str[exp->i] && (ft_isalnum(exp->str[exp->i])
+			|| exp->str[exp->i] == '_'))
+		exp->i++;
+	var_name = ft_substr(exp->str, start, exp->i - start);
+	var_value = get_env(exp->shell, var_name);
 	free(var_name);
-	if (var_value != NULL)
+	if (var_value == NULL)
 	{
-		if (state == NORMAL)
-		{
-			processed_value = reduce_spaces(var_value);
-			res = ft_strjoin(tmp, processed_value);
-			free(processed_value);
-		}
-		else
-			res = ft_strjoin(tmp, var_value);
-		free(tmp);
+		exp->res = tmp;
+		return ;
+	}
+	if (exp->state == NORMAL)
+	{
+		processed_value = reduce_spaces(var_value);
+		exp->res = ft_strjoin(tmp, processed_value);
+		free(processed_value);
 	}
 	else
-		res = tmp;
-	return (res);
+		exp->res = ft_strjoin(tmp, var_value);
+	free(tmp);
+}
+
+void	ft_append_dollar_expansion(t_expand *exp)
+{
+	exp->i++;
+	if (exp->str[exp->i] == '?')
+		expand_exit_code(exp);
+	else if (ft_isalpha(exp->str[exp->i]) || exp->str[exp->i] == '_')
+		expand_normal_var(exp);
 }
 
 int	is_valid_dollar(char c)

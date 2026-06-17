@@ -6,7 +6,7 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 18:27:45 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/17 04:13:26 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/17 20:05:41 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ extern volatile sig_atomic_t	g_sig;
 typedef struct s_redir			t_redir;
 typedef struct s_token			t_token;
 typedef struct sigaction		t_sa;
+typedef struct s_shell			t_shell;
 
 typedef enum e_char_type
 {
@@ -100,6 +101,29 @@ typedef struct s_cmd
 	pid_t			pid;
 }	t_cmd;
 
+typedef struct s_expand
+{
+	t_shell		*shell;
+	char		*res;
+	char		*str;
+	int			i;
+	t_state		state;
+}	t_expand;
+
+typedef struct s_heredoc
+{
+	t_shell		*shell;
+	char		*real_delim;
+	int			expand_flag;
+	int			write_fd;
+}	t_heredoc;
+
+typedef struct s_pipe_fds
+{
+	int		fd[2];
+	pid_t	pid;
+}	t_pipe_fds;
+
 typedef struct s_shell
 {
 	char	**env;
@@ -130,8 +154,7 @@ void		ft_putstr_fd(char *s, int fd);
 // EXPAND
 void		expand_tokens(t_shell *shell);
 int			is_valid_dollar(char c);
-char		*append_var_value(t_shell *shell, char *res,
-				char *str, int *i, t_state state);
+void		ft_append_dollar_expansion(t_expand *curr_expand);
 void		ft_update_quote_state(char c, t_state *state);
 
 // REMOVE QUOTES
@@ -141,8 +164,7 @@ void		remove_quotes(t_shell *shell);
 // HEREDOC
 int			has_quotes(char *str);
 int			read_heredoc(t_shell *shell, char *delim_token, t_cmd *current_cmd);
-void		do_heredoc_loop(t_shell *shell, char *real_delim,
-			int expand_flag, int write_fd);
+void		do_heredoc_loop(t_heredoc *hd);
 
 // TABLE CMD
 t_cmd		*cmd_table(t_shell *shell);
