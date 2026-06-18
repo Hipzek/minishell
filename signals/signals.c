@@ -6,18 +6,17 @@
 /*   By: hbelleuv <hbelleuv@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 20:09:50 by hbelleuv          #+#    #+#             */
-/*   Updated: 2026/06/17 21:55:00 by hbelleuv         ###   ########.fr       */
+/*   Updated: 2026/06/15 00:00:00 by hbelleuv         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
-#include <signal.h>
-#include <unistd.h>
 
 void	heredoc_sigint(int sig)
 {
 	(void)sig;
 	g_sig = SIGINT;
+	close(STDIN_FILENO);
 	write(STDOUT_FILENO, "\n", 1);
 }
 
@@ -45,17 +44,24 @@ void	setup_inter_signals(void)
 	sigaction(SIGQUIT, &sa_quit, NULL);
 }
 
-void	disable_sigint(struct sigaction *old_sa)
+void	setup_exec_signals(void)
 {
-	struct sigaction	sa_new;
+	struct sigaction	sa;
 
-	sa_new.sa_handler = SIG_IGN;
-	sigemptyset(&sa_new.sa_mask);
-	sa_new.sa_flags = 0;
-	sigaction(SIGINT, &sa_new, old_sa);
+	sa.sa_handler = SIG_IGN;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = 0;
+	sigaction(SIGINT, &sa, NULL);
+	sigaction(SIGQUIT, &sa, NULL);
 }
 
-void	restore_sigint(struct sigaction *old_sa)
+void	setup_child_signal(void)
 {
-	sigaction(SIGINT, old_sa, NULL);
+	struct sigaction	sa;
+
+	sa.sa_handler = SIG_DFL;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = 0;
+	sigaction(SIGINT, &sa, NULL);
+	sigaction(SIGQUIT, &sa, NULL);
 }
